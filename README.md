@@ -1,3 +1,3 @@
-# UTD_CS6314_assignment
+# UTD CS6314 Assignment
 
-Webpage link: https://utd-cs6314-assignment.web.app/
+Web page link: https://utd-cs6314-assignment.web.app/
