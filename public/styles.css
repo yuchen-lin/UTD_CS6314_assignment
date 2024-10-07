@@ -7,6 +7,8 @@
 
 body {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background-image: url(assets/background.jpg);
   background-size: cover;
   background-repeat: no-repeat;
@@ -63,6 +65,33 @@ nav ul li a:hover {
   font-weight: 500;
   margin-left: auto;
   padding-right: 10px; /* tweak this for time's right padding */
+}
+
+/* The container for the left and right sections: */
+
+.container {
+  display: flex;
+  flex: 1; /* Makes the container take the available space */
+}
+
+/* Left section: takes 1/3 of the container width */
+.left-section {
+  flex: 1; /* 1 part */
+  padding: 20px;
+}
+
+/* Right section: takes 2/3 of the container width */
+.right-section {
+  flex: 2; /* 2 parts */
+  padding: 20px;
+}
+
+/* Footer styling */
+footer {
+  background-color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: auto; /* Pushes the footer to the bottom of the page */
 }
 
 /* Google fonts: */
