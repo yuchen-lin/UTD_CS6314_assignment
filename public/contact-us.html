@@ -3,12 +3,13 @@
   <head>
     <title>CS6314 Assignment2 YXL220044 EFC200000</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="contact-us.css">
   </head>
   <body>
     <header class="header roboto-bold">Discover Your Next Adventure - Book Stays, Flights, Cruises, & More!</header>
     <nav>
       <ul>
-        <li><a href="index.html">Stays</a></li>
+        <li><a href="stays.html">Stays</a></li>
         <li><a href="flights.html">Flights</a></li>
         <li><a href="cars.html">Cars</a></li>
         <li><a href="cruises.html">Cruises</a></li>
@@ -18,17 +19,48 @@
     </nav>
     <div class="container">
       <section class="left-section">
-        <div>Side</div>
+        <div></div>
       </section>
       <section class="right-section">
-        <div>Main Content</div>
-        <div>Contact-us page</div>
+        <h2>Contact Us</h2>
+        <form id="contactForm">
+          <div class="form-row">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName">
+          </div>
+
+          <div class="form-row">
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" placeholder="(ddd) ddd-dddd">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email">
+          </div>
+
+          <div class="form-row gender-row">
+            <label>Gender:</label>
+            <input type="radio" id="male" name="gender" value="male"> <label for="male">Male</label>
+            <input type="radio" id="female" name="gender" value="female"> <label for="female">Female</label>
+            <input type="radio" id="other" name="gender" value="other"> <label for="other">Other</label>
+          </div>
+
+          <div class="form-row">
+            <label for="comment">Comment:</label>
+            <textarea id="comment" name="comment"></textarea>
+          </div>
+
+          <input type="submit" value="Submit">
+        </form>
+        <p id="errorMessage" style="color:red;"></p>
       </section>
     </div>
     <footer>
       <div>footer</div>
     </footer>
+    <div id="notification">Form submitted successfully!</div>
 
-    <script src="script.js"></script>
+    <script src="time.js"></script>
+    <script src="contact-us.js"></script>
   </body>
 </html>

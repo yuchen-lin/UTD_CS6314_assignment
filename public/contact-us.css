@@ -1,0 +1,111 @@
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  color: #333;
+}
+
+/* Form styling */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.form-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+label {
+  font-weight: bold;
+  color: #333;
+  font-size: 1rem;
+  margin-right: 1rem;
+}
+
+label[for="lastName"] {
+  margin-left: 1rem; /* Add spacing */
+}
+
+label[for="email"] {
+  margin-left: 1rem; /* Add spacing */
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+  padding: 0.5rem; /* Reduced padding */
+  font-size: 1rem; /* Equivalent to 16px */
+  border: 1px solid #ccc;
+  border-radius: 0.3125rem; /* Equivalent to 5px */
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: 0.625rem; /* Space between label and input */
+  font-family: 'Roboto', sans-serif;
+}
+
+input[type="radio"] {
+  margin-right: 0.3125rem; /* Reduced margin */
+}
+
+textarea {
+  resize: vertical;
+  height: 6.25rem; /* Reduced height */
+}
+
+.gender-row input[type="radio"] {
+  margin-right: 0.3rem;
+  margin-left: 1rem;
+}
+
+.gender-row label {
+  margin-right: 1rem; /* Space between label and first radio button */
+}
+
+/* Submit button styling */
+input[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.625rem; /* Reduced padding */
+  border: none;
+  border-radius: 0.3125rem; /* Equivalent to 5px */
+  font-size: 1rem; /* Equivalent to 16px */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+/* Error message styling */
+#errorMessage {
+  margin-top: 0.3125rem; /* Reduced margin */
+  font-size: 0.875rem; /* Equivalent to 14px */
+  color: red;
+}
+
+input.error, textarea.error {
+  border: 2px solid red; /* Set the border color to red for error state */
+}
+
+/* Notification styling */
+#notification {
+  display: none;
+  position: fixed;
+  top: 1.25rem; /* Position adjusted for consistency */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5rem; /* Reduced padding */
+  border-radius: 0.3125rem; /* Equivalent to 5px */
+  z-index: 1000;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.gender-row {
+  justify-content: flex-start; /* Align gender labels to the start */
+}
