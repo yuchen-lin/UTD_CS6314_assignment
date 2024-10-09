@@ -19,7 +19,18 @@
     </nav>
     <div class="container">
       <section class="left-section">
-        <div>Side</div>
+        <div class="settings">
+          <h3>Settings</h3>
+          <label for="font-size">Font Size:</label>
+          <select id="font-size">
+            <option value="small">Small</option>
+            <option value="medium" selected>Medium</option>
+            <option value="large">Large</option>
+          </select>
+          <br>
+          <label for="bg-color">Background Color:</label>
+          <input type="color" id="bg-color" value="#ffffff">
+        </div>
       </section>
       <section class="right-section">
         <div>Main Content</div>
@@ -27,10 +38,20 @@
       </section>
     </div>
     <footer>
-      <div>footer</div>
+      <div class="footer-container">
+        <div class="contact-info">
+          <h4>Contact Us</h4>
+          <p>Edilberto Carrizales Cavazos | EFC200000 | efc200000@utdallas.edu</p>
+          <p>Yu-Chen Lin | YXL220044 | yxl220044@utdallas.edu</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2024 CS6314-Assignment2. All rights reserved.</p>
+      </div>
     </footer>
 
     <script src="time.js"></script>
+    <script src="settings.js"></script>
     <script src="cruises.js"></script>
   </body>
 </html>
