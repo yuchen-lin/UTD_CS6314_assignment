@@ -93,7 +93,7 @@
 }
 
 /* Notification styling */
-.right-section #notification {
+#notification {
   display: none;
   position: fixed;
   top: 1.25rem; /* Position adjusted for consistency */
