@@ -1,4 +1,4 @@
-h2 {
+.right-section h2 {
   font-size: 1.5rem;
   margin-bottom: 1.25rem;
   text-align: center;
@@ -6,36 +6,37 @@ h2 {
 }
 
 /* Form styling */
-form {
+.right-section form {
   display: flex;
   flex-direction: column;
   gap: 1.3rem;
 }
 
-.form-row {
+.right-section .form-row {
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
 
-label {
+.right-section label {
+  flex-shrink: 0;
   font-weight: bold;
   color: #333;
   font-size: 1rem;
   margin-right: 1rem;
 }
 
-label[for="lastName"] {
+.right-section label[for="lastName"] {
   margin-left: 1rem; /* Add spacing */
 }
 
-label[for="email"] {
+.right-section label[for="email"] {
   margin-left: 1rem; /* Add spacing */
 }
 
-input[type="text"],
-input[type="email"],
-textarea {
+.right-section input[type="text"],
+.right-section input[type="email"],
+.right-section textarea {
   padding: 0.5rem; /* Reduced padding */
   font-size: 1rem; /* Equivalent to 16px */
   border: 1px solid #ccc;
@@ -46,53 +47,53 @@ textarea {
   font-family: 'Roboto', sans-serif;
 }
 
-input[type="radio"] {
+.right-section input[type="radio"] {
   margin-right: 0.3125rem; /* Reduced margin */
 }
 
-textarea {
+.right-section textarea {
   resize: vertical;
   height: 6.25rem; /* Reduced height */
 }
 
-.gender-row input[type="radio"] {
+.right-section .gender-row input[type="radio"] {
   margin-right: 0.3rem;
   margin-left: 1rem;
 }
 
-.gender-row label {
+.right-section .gender-row label {
   margin-right: 1rem; /* Space between label and first radio button */
 }
 
 /* Submit button styling */
-input[type="submit"] {
+.right-section input[type="submit"] {
   background-color: #4CAF50;
   color: white;
-  padding: 0.625rem; /* Reduced padding */
+  padding: 0.625rem;
   border: none;
-  border-radius: 0.3125rem; /* Equivalent to 5px */
-  font-size: 1rem; /* Equivalent to 16px */
+  border-radius: 0.3125rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
-input[type="submit"]:hover {
+.right-section input[type="submit"]:hover {
   background-color: #45a049;
 }
 
 /* Error message styling */
-#errorMessage {
-  margin-top: 0.3125rem; /* Reduced margin */
-  font-size: 0.875rem; /* Equivalent to 14px */
+.right-section #errorMessage {
+  margin-top: 0.3125rem;
+  font-size: 0.875rem;
   color: red;
 }
 
-input.error, textarea.error {
+.right-section input.error, .right-section textarea.error {
   border: 2px solid red; /* Set the border color to red for error state */
 }
 
 /* Notification styling */
-#notification {
+.right-section #notification {
   display: none;
   position: fixed;
   top: 1.25rem; /* Position adjusted for consistency */
@@ -106,6 +107,6 @@ input.error, textarea.error {
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.gender-row {
+.right-section .gender-row {
   justify-content: flex-start; /* Align gender labels to the start */
 }

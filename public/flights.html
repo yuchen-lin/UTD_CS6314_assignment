@@ -33,8 +33,74 @@
         </div>
       </section>
       <section class="right-section">
-        <div>Main Content</div>
-        <div>Flights page</div>
+        <h2>Book Your Flight</h2>
+        <form id="flightForm">
+            <div class="form-row">
+              <label for="trip-type">Type of Trip:</label>
+              <select id="trip-type">
+                  <option value="one-way">One Way</option>
+                  <option value="round-trip">Round Trip</option>
+              </select>
+            </div>
+            <br>
+
+            <div class="form-row">
+              <label for="origin">Origin:</label>
+              <input type="text" id="origin">
+            </div>
+            <br>
+
+            <div class="form-row">
+              <label for="destination">Destination:</label>
+              <input type="text" id="destination">
+            </div>
+            <br>
+
+            <div class="form-row">
+              <label for="departure-date">Departure Date:</label>
+              <input type="date" id="departure-date">
+            </div>
+            <br>
+
+            <div id="return-flight-section" style="display: none;">
+                <div class="form-row">
+                  <label for="return-date">Return Date:</label>
+                  <input type="date" id="return-date">
+                </div>
+                <br>
+            </div>
+
+            <div>
+                <div class="form-row">
+                  <h4>Passenger Details:</h4>
+                  <span id="passenger-icon" style="cursor:pointer;">👤</span>
+                </div>
+                <div id="passenger-form" style="display:none;">
+                    <div class="form-row">
+                      <label for="adults">Adults (12+):</label>
+                      <input type="number" id="adults" min="0" max="4" value="0">
+                    </div>
+                    <br>
+                    <div class="form-row">
+                      <label for="children">Children (2-11):</label>
+                      <input type="number" id="children" min="0" max="4" value="0">
+                    </div>
+                    <br>
+                    <div class="form-row">
+                      <label for="infants">Infants (under 2):</label>
+                      <input type="number" id="infants" min="0" max="4" value="0">
+                    </div>
+                    <br>
+                </div>
+            </div>
+
+            <input type="submit" value="Search">
+            <p id="errorMessage" style="color:red;"></p>
+        </form>
+
+        <!-- Display Information -->
+        <div id="displayInfo" class="hidden" style="margin-top: 20px;"></div>
+    </section>
       </section>
     </div>
     <footer>

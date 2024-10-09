@@ -1,0 +1,91 @@
+.right-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  color: #333;
+}
+
+.right-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.right-section .form-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.right-section label {
+  flex-shrink: 0;
+  font-weight: bold;
+  color: #333;
+  font-size: 1rem;
+  margin-right: 1rem;
+}
+
+.right-section input[type="text"],
+.right-section input[type="date"],
+.right-section input[type="color"],
+.right-section input[type="number"],
+.right-section select {
+  padding: 0.5rem; /* Reduced padding */
+  font-size: 1rem; /* Equivalent to 16px */
+  border: 1px solid #ccc;
+  border-radius: 0.3125rem; /* Equivalent to 5px */
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: 0.625rem; /* Space between label and input */
+}
+
+.right-section input[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.625rem; /* Reduced padding */
+  border: none;
+  border-radius: 0.3125rem; /* Equivalent to 5px */
+  font-size: 1rem; /* Equivalent to 16px */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.right-section input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+/* Error message styling */
+.right-section #errorMessage {
+  margin-top: 0.3125rem; /* Reduced margin */
+  font-size: 0.875rem; /* Equivalent to 14px */
+  color: red;
+}
+
+/* Display Information Styles */
+.right-section #displayInfo {
+  margin-top: 20px;
+  padding: 1rem;
+  background-color: #e9ffe9;
+  border: 1px solid #4CAF50;
+  border-radius: 0.3125rem;
+}
+
+.right-section .hidden {
+  display: none; /* Hides the element */
+}
+
+.right-section #passenger-icon {
+  margin-left: 10px;
+}
+
+.right-section #passenger-form {
+  margin-top: 10px;
+}
+
+.right-section #passenger-form label {
+  width: 130px;
+}
+
+.right-section #passenger-form input {
+  width: 50px;
+}
