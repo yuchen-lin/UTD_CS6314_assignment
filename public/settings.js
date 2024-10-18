@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get the original font size of the current element
     const fontSize = window.getComputedStyle(element).fontSize;
     originalFontSizes.set(element, fontSize);
-
+    
     // Recursively call for each child element
     const childElements = element.children;
     for (let i = 0; i < childElements.length; i++) {
@@ -35,15 +35,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to update font sizes based on selected value
   function updateFontSize() {
     const selectedSize = fontSizeSelect.value;
-    // Set a specific font size for each selection
+    // Set a more subtle font size for each selection
     const fontSizeMapping = {
-      small: '0.875em',  // Set specific font size for small
-      medium: '1em',     // Set specific font size for medium
-      large: '1.25em'    // Set specific font size for large
+      small: '0.9em',  // Slightly smaller
+      medium: '1em',   // Original size
+      large: '1.1em'   // Slightly larger
     };
 
-    // Update the font size of all elements in the main content
+    // Reset the font sizes to original for all elements
     const elements = mainContent.querySelectorAll('*'); // Select all child elements
+    elements.forEach(element => {
+      element.style.fontSize = ''; // Reset font size to original
+    });
+
+    // Apply the new font size for all elements
     elements.forEach(element => {
       element.style.fontSize = fontSizeMapping[selectedSize]; // Apply the new font size directly
     });
