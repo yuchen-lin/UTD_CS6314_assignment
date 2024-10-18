@@ -33,27 +33,61 @@
         </div>
       </section>
       <section class="right-section">
-        <div>Main Content</div>
+        <!-- Enter the 
+        -enter the name of city
+        -enter type of car
+        -enter the check in date
+        -enter the check out date
+        
+        -submit button - > validates the user infor and display the 
+        info entered by the user
 
-         <!-- Enter the 
-         -enter the name of city
-         -enter type of car
-         -enter the check in date
-         -enter the check out date
-         
-         -submit button - > validates the user infor and display the 
-         info entered by the user
+        -If any info entered is not valid, inform the user
 
-         -If any info entered is not valid, inform the user
+        USE DOM METHODS TO DEVELOP THIS PAGE
 
-         USE DOM METHODS TO DEVELOP THIS PAGE
+        (check problem for validation requirements)
+        -the user must enter check in date and check out date between sep 1st 2024 to dec 1st 2024
+        -the type of car can be economy, SUB, compact or midsize
+        -->
+        <h2>Book Your Car</h2>
+        <form id="carForm">
+            <div class="form-row">
+              <label for="city-name">City Name:</label>
+              <input type="text" id="city-name">
+            </div>
+            <br>
 
-         (check problem for validation requirements)
-         -->
+            <div class="form-row">
+              <label for="car-type">Car Type:</label>
+              <select id="car-type">
+                <option value="economy">Economy</option>
+                <option value="suv">SUV</option>
+                <option value="compact">Compact</option>
+                <option value="midsize">Midsize</option>
+            </select>
+            </div>
+            <br>
 
+            <div class="form-row">
+              <label for="checkin">Check-in Date:</label>
+              <input type="date" id="checkin">
+            </div>
+            <br>
 
+            <div class="form-row">
+              <label for="checkout">Check-out Date:</label>
+              <input type="date" id="checkout">
+            </div>
+            <br>
 
-        <div>Cars page</div>
+            <input type="submit" value="Search">
+            <p id="errorMessage" style="color:red;"></p>
+        </form>
+
+        <!-- Display Information -->
+        <div id="displayInfo" class="hidden" style="margin-top: 20px;"></div>
+        <!---->
       </section>
     </div>
     <footer>

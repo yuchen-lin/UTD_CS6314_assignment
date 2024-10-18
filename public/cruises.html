@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>CS6314 Assignment2 YXL220044 EFC200000</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="cruises.css">
   </head>
@@ -32,24 +33,88 @@
           <input type="color" id="bg-color" value="#ffffff">
         </div>
       </section>
-      <section class="right-section">
-        <div>Main Content</div>
+        <section class="right-section">
 
-          <!-- Enter the 
-         -enter a destination
-         -enter depating between (duration of cruise minimum and maximum)
-         -enter number of guests per category (adult, childern, infants)
+        <!-- Enter the 
+        -enter a destination
+        -enter depating between date 
+        -duration of cruise (minimum and maximum)
+        -enter number of guests per category (adult, childern, infants)
 
-         -submit button -> validates user inputs, and displays all 
-         the information entered by the user, if any input not valid inform the user
+        -submit button -> validates user inputs, and displays all 
+        the information entered by the user, if any input not valid inform the user
 
-         -YOU ARE SUPPOSED TO USE JQUERY METHODS
+        -YOU ARE SUPPOSED TO USE JQUERY METHODS
 
-         (check description for how to validate this page
-         -->
+        (check description for how to validate this page
+        -the destination should be alaska, bahamas, europe or mexico
+        -for duation of cruise (minimum and maximum), minimum cannot be less than 3 and maximum cannot be greater than 10 days
+        -departing between can be anytime between sep 1st to dec 1st 2024
+        -number of guests cannot be more than 2 for each room. However infants can stay with adults even if the number of guests exceeds 2
+        -->
+        <h2>Book Your Cruises</h2>
+        <form id="cruiseForm">
+            <div class="form-row">
+              <label for="destination">Destination:</label>
+              <select id="destination">
+                  <option value="alaska">Alaska</option>
+                  <option value="bahamas">Bahamas</option>
+                  <option value="europe">Europe</option>
+                  <option value="mexico">Mexico</option>
+              </select>
+            </div>
+            <br>
 
+            <div class="form-row">
+              <label for="departure-date">Departure Date:</label>
+              <input type="date" id="departure-date">
+            </div>
+            <br>
 
-        <div>Cruises page</div>
+            <div class="form-row">
+              <label for="duartion">Duration (Min 3 Days, Max 10 Days):</label>
+              <input type="text" id="duration">
+            </div>
+            <br>
+
+            <div>
+                <div class="form-row">
+                  <h4>Passenger Details:</h4>
+                  <span id="passenger-icon" style="cursor:pointer;">👤</span>
+                </div>
+                <div id="passenger-form" style="display:none;">
+                    <div class="form-row">
+                      <label for="adults">Adults (12+):</label>
+                      <input type="number" id="adults" min="1" value="1">
+                    </div>
+                    <br>
+                    <div class="form-row">
+                      <label for="children">Children (2-11):</label>
+                      <input type="number" id="children" min="0" value="0">
+                    </div>
+                    <br>
+                    <div class="form-row">
+                      <label for="infants">Infants (under 2):</label>
+                      <input type="number" id="infants" min="0" value="0">
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <br>
+
+            <div class="form-row">
+              <label for="rooms">Number of Rooms:</label>
+              <input type="number" id="rooms" min="1" value="1">
+            </div>
+            <br>
+
+            <input type="submit" value="Search">
+            <p id="errorMessage" style="color:red;"></p>
+        </form>
+
+        <!-- Display Information -->
+        <div id="displayInfo" class="hidden" style="margin-top: 20px;"></div>
+        <!---->
       </section>
     </div>
     <footer>

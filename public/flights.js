@@ -51,16 +51,31 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const isValidLocation = (location) => {
-      const validLocations = [
-        "Austin",
-        "Dallas",
-        "Houston",
-        "San Antonio",
-        "Los Angeles",
-        "San Francisco",
-        "San Diego",
-      ];
-      return validLocations.includes(location);
+      const validLocations = {
+          Texas: [
+              "Abilene", "Amarillo", "Austin", "Beaumont", "Brownsville", "Carrollton", 
+              "College Station", "Dallas", "Denton", "El Paso", "Fort Worth", "Frisco", 
+              "Garland", "Grand Prairie", "Houston", "Irving", "Laredo", "Lewisville", 
+              "McKinney", "Mesquite", "Midland", "Odessa", "Pasadena", "Round Rock", 
+              "San Angelo", "San Antonio", "San Marcos", "Sugar Land", "Tyler", 
+              "Wichita Falls"
+          ],
+          California: [
+              "Alameda", "Anaheim", "Bakersfield", "Chula Vista", "Concord", "Corona", 
+              "Daly City", "El Monte", "Fresno", "Fullerton", "Glendale", "Hayward", 
+              "Huntington Beach", "Irvine", "Lancaster", "Long Beach", "Los Angeles", 
+              "Modesto", "Oakland", "Ontario", "Orange", "Riverside", "Sacramento", 
+              "San Bernardino", "San Diego", "San Francisco", "San Jose", "Santa Ana", 
+              "Santa Clara", "Santa Monica", "Stockton", "Torrance", "Visalia", "Woodland"
+          ],
+      };
+      
+      // Convert location to lowercase
+      const lowerCaseLocation = location.toLowerCase();
+      
+      // Check for inclusion in valid locations
+      return validLocations.Texas.some(city => city.toLowerCase() === lowerCaseLocation) || 
+      validLocations.California.some(city => city.toLowerCase() === lowerCaseLocation);
     };
 
     // Check if inputs are valid

@@ -36,20 +36,74 @@
         <!-- Enter the 
          -name of the city
          -check in date,
-         -checkout date, number of guests of adults, children, or infants
+         -checkout date, 
+         -number of guests of adults, children, or infants
          -A search button - > validates all inputs and display info of user
 
          -Should also display the number of rooms the user needs or inform user if any info is not valid
         
-         -(validations details are in description)  
+         -(validations details are in description)
+         -City must be a city in Texas or California
+         -date must be between Sep 1, 2024 to Dec 1st 2024
+         -number of guests cannot be more than 2 for each room. However, infants can stay with adults even if the number of guests exceeds 2  
          -->
+        <h2>Book Your Stay</h2>
+        <form id="stayForm">
+            <div class="form-row">
+              <label for="city-name">City Name:</label>
+              <input type="text" id="city-name">
+            </div>
+            <br>
 
-        <div>
-          <h1> Stays </h1>
+            <div class="form-row">
+              <label for="checkin">Check-in Date:</label>
+              <input type="date" id="checkin">
+            </div>
+            <br>
 
+            <div class="form-row">
+              <label for="checkout">Check-out Date:</label>
+              <input type="date" id="checkout">
+            </div>
+            <br>
+            <div>
+                <div class="form-row">
+                  <h4>Number of guests:</h4>
+                  <span id="guest-icon" style="cursor:pointer;">👤</span>
+                </div>
+                <div id="guest-form" style="display:none;">
+                    <div class="form-row">
+                      <label for="adults">Adults (12+):</label>
+                      <input type="number" id="adults" min="1" value="1">
+                    </div>
+                    <br>
+                    <div class="form-row">
+                      <label for="children">Children (2-11):</label>
+                      <input type="number" id="children" min="0" value="0">
+                    </div>
+                    <br>
+                    <div class="form-row">
+                      <label for="infants">Infants (under 2):</label>
+                      <input type="number" id="infants" min="0" value="0">
+                    </div>
+                    <br>
+                </div>
+            </div>
+            <br>
 
+            <div class="form-row">
+              <label for="rooms">Number of Rooms:</label>
+              <input type="number" id="rooms" min="1" value="1">
+            </div>
+            <br>
 
-        </div>
+            <input type="submit" value="Search">
+            <p id="errorMessage" style="color:red;"></p>
+        </form>
+
+        <!-- Display Information -->
+        <div id="displayInfo" class="hidden" style="margin-top: 20px;"></div>
+        <!---->
       </section>
     </div>
     <footer>
