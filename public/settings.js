@@ -35,16 +35,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to update font sizes based on selected value
   function updateFontSize() {
     const selectedSize = fontSizeSelect.value;
-    const scalingFactor = {
-      small: 0.875, // 0.875 times original size
-      medium: 1,    // 1 times original size
-      large: 1.25   // 1.25 times original size
-    }[selectedSize];
+    // Set a specific font size for each selection
+    const fontSizeMapping = {
+      small: '0.875em',  // Set specific font size for small
+      medium: '1em',     // Set specific font size for medium
+      large: '1.25em'    // Set specific font size for large
+    };
 
-    // Update the font size of the main content and its child elements
-    originalFontSizes.forEach((originalSize, element) => {
-      const newFontSize = parseFloat(originalSize) * scalingFactor + 'px';
-      element.style.fontSize = newFontSize;
+    // Update the font size of all elements in the main content
+    const elements = mainContent.querySelectorAll('*'); // Select all child elements
+    elements.forEach(element => {
+      element.style.fontSize = fontSizeMapping[selectedSize]; // Apply the new font size directly
     });
 
     // Save the selected font size to localStorage
