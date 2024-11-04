@@ -1,0 +1,11 @@
+To set up npm:
+npm init -y
+
+To install all the libraries:
+npm install express
+npm install cors
+npm install xml2js
+npm install body-parser
+
+To run the server:
+npm server.js

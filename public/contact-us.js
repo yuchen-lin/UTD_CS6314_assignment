@@ -86,10 +86,38 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("comment").classList.remove("error");
       }
   
-      // If all inputs are valid, show notification
+      // If all inputs are valid
       if (isValid) {
-        showNotification('Form submitted successfully!');
-        document.getElementById("contactForm").reset();
+        const userData = {
+          firstName: firstName.value.trim(), // Extract value
+          lastName: lastName.value.trim(), // Extract value
+          phone: phone.value.trim(), // Extract value
+          email: email.value.trim(), // Extract value
+          gender: gender ? gender.value : '', // Extract value, ensure it's a string
+          comment: comment // Already trimmed
+        };
+
+        // Send the data to the server
+        fetch('http://localhost:3000/create-xml', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            showNotification(data.message);
+            document.getElementById("contactForm").reset();
+        })
+        .catch((error) => {
+            errorMessage.innerHTML += 'Error submitting form: ' + error.message + '<br>';
+        });
       }
     });
   
