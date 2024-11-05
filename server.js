@@ -78,6 +78,57 @@ app.post("/create-xml", (req, res) => {
   });
 });
 
+app.post("/update-flight-seats", (req, res) => {
+  const { flightId, seatsToBook } = req.body; // Expecting flightId and seatsToBook in the request body
+  const filePath = path.join(dataDirectory, "flights_availableSeats.xml"); // Path to the flights_availableSeats.xml file
+
+  // Read the existing XML file
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err && err.code === "ENOENT") {
+      // If the file does not exist
+      return res.status(404).json({ message: "XML file not found." });
+    } else if (err) {
+      console.error("Error reading XML file:", err);
+      return res.status(500).json({ message: "Error reading XML file" });
+    }
+
+    // Parse the XML data
+    xml2js.parseString(data, (parseErr, result) => {
+      if (parseErr) {
+        console.error("Error parsing XML file:", parseErr);
+        return res.status(500).json({ message: "Error parsing XML file" });
+      }
+
+      // Find the flight by flightId
+      const flight = result.flights.flight.find((f) => f["flight-id"][0] === flightId);
+      if (flight) {
+        const availableSeats = parseInt(flight["available-seats"][0]);
+        if (availableSeats >= seatsToBook) {
+          // Update available seats
+          flight["available-seats"][0] = (availableSeats - seatsToBook).toString();
+
+          // Rebuild the XML and write it back to the file
+          const builder = new xml2js.Builder();
+          const xml = builder.buildObject(result);
+
+          fs.writeFile(filePath, xml, (writeErr) => {
+            if (writeErr) {
+              console.error("Error writing XML file:", writeErr);
+              return res.status(500).json({ message: "Error updating XML file" });
+            }
+
+            return res.json({ message: "Available seats updated successfully!" });
+          });
+        } else {
+          return res.status(400).json({ message: "Not enough seats available." });
+        }
+      } else {
+        return res.status(404).json({ message: "Flight not found." });
+      }
+    });
+  });
+});
+
 // For flights page
 app.post("/search-flights", (req, res) => {
   const { origin, destination, departureDate, adults, children, infants } =

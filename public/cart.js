@@ -32,6 +32,7 @@ if (selectedFlights.departure.length > 0) {
         // Create and populate list item with flight details
         const li = document.createElement("li");
         li.innerHTML = `
+          <p>Departure Flight:</p>
           <p>Flight ID: ${flight["flight-id"][0]}</p>
           <p>Origin: ${flight.origin}</p>
           <p>Destination: ${flight.destination}</p>
@@ -94,6 +95,7 @@ if (selectedFlights.departure.length > 0) {
         // Create and populate list item with flight details
         const li = document.createElement("li");
         li.innerHTML = `
+          <p>Return Flight:</p>
           <p>Flight ID: ${flight["flight-id"][0]}</p>
           <p>Origin: ${flight.origin}</p>
           <p>Destination: ${flight.destination}</p>
@@ -145,15 +147,135 @@ document.getElementById("book-flight-btn").addEventListener("click", () => {
     passengers: [],
   };
 
+  // Process departure flights
   selectedFlights.departure.forEach((data, index) => {
-    const { flightId } = data;
-    const flightLi = document.createElement("li");
-    flightLi.textContent = `Flight ID: ${flightId}`;
-    bookedFlightInfo.appendChild(flightLi);
+    const { flightId, adults, children, infants } = data;
 
-    // Collect flight details
-    bookingDetails.flights.push({ flightId });
+    // Fetch flight details for the booked flight
+    fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`)
+      .then((response) => response.json())
+      .then((flight) => {
+        // Create and populate list item with flight details
+        const flightLi = document.createElement("li");
+        flightLi.innerHTML = `
+          <p>Departure Flight:</p>
+          <p>Flight ID: ${flight["flight-id"][0]}</p>
+          <p>Origin: ${flight.origin}</p>
+          <p>Destination: ${flight.destination}</p>
+          <p>Departure Date: ${flight["departure-date"][0]}</p>
+          <p>Departure Time: ${flight["departure-time"][0]}</p>
+          <p>Arrival Date: ${flight["arrival-date"][0]}</p>
+          <p>Arrival Time: ${flight["arrival-time"][0]}</p>
+          <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
+        `;
+        bookedFlightInfo.appendChild(flightLi);
+
+        // Collect flight details
+        bookingDetails.flights.push({
+          flightId: flight["flight-id"][0],
+          origin: flight.origin,
+          destination: flight.destination,
+          departureDate: flight["departure-date"][0],
+          departureTime: flight["departure-time"][0],
+          arrivalDate: flight["arrival-date"][0],
+          arrivalTime: flight["arrival-time"][0],
+          adults: adults,
+          children: children,
+          infants: infants,
+        });
+
+        // Update flight seats
+        return fetch("http://localhost:3000/update-flight-seats", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            flightId: flightId,
+            seatsToBook: adults + children + infants, // Total seats to book
+          }),
+        });
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(
+          `Seats booked for Flight ID ${data.flightId}:`,
+          data.message
+        ); // Log success message
+      })
+      .catch((error) => {
+        console.error(
+          "Error fetching flight details or updating seats:",
+          error
+        );
+      });
   });
+
+  // Process return flights if they exist
+  if (selectedFlights.return && selectedFlights.return.length > 0) {
+    selectedFlights.return.forEach((data, index) => {
+      const { flightId, adults, children, infants } = data;
+
+      // Fetch flight details for the return flight
+      fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`)
+        .then((response) => response.json())
+        .then((flight) => {
+          // Create and populate list item with flight details
+          const flightLi = document.createElement("li");
+          flightLi.innerHTML = `
+            <p>Return Flight:</p>
+            <p>Flight ID: ${flight["flight-id"][0]}</p>
+            <p>Origin: ${flight.origin}</p>
+            <p>Destination: ${flight.destination}</p>
+            <p>Departure Date: ${flight["departure-date"][0]}</p>
+            <p>Departure Time: ${flight["departure-time"][0]}</p>
+            <p>Arrival Date: ${flight["arrival-date"][0]}</p>
+            <p>Arrival Time: ${flight["arrival-time"][0]}</p>
+            <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
+          `;
+          bookedFlightInfo.appendChild(flightLi);
+
+          // Collect return flight details
+          bookingDetails.flights.push({
+            flightId: flight["flight-id"][0],
+            origin: flight.origin,
+            destination: flight.destination,
+            departureDate: flight["departure-date"][0],
+            departureTime: flight["departure-time"][0],
+            arrivalDate: flight["arrival-date"][0],
+            arrivalTime: flight["arrival-time"][0],
+            adults: adults,
+            children: children,
+            infants: infants,
+          });
+
+          // Update flight seats
+          return fetch("http://localhost:3000/update-flight-seats", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              flightId: flightId,
+              seatsToBook: adults + children + infants, // Total seats to book
+            }),
+          });
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(
+            `Seats booked for Flight ID ${data.flightId}:`,
+            data.message
+          ); // Log success message
+        })
+        .catch((error) => {
+          console.error(
+            "Error fetching flight details or updating seats:",
+            error
+          );
+        });
+    });
+  }
 
   // Collect and display passenger information
   selectedFlights.departure.forEach((data, index) => {
