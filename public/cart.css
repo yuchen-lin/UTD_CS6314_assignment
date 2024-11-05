@@ -1,0 +1,109 @@
+.hidden {
+  display: none;
+}
+
+.right-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  color: #333;
+}
+
+/* Selected Flights section */
+.right-section #selected-flights {
+  margin-bottom: 20px;
+  border-top: 2px solid #004c99;
+  padding-top: 15px;
+}
+
+.right-section #selected-flights h3 {
+  font-size: 1.5rem;
+  color: #004c99;
+  margin-bottom: 10px;
+}
+
+.right-section #flight-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.right-section #flight-list li {
+  margin: 5px 0;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+/* Passenger Details Form */
+.right-section #passenger-details-form {
+  margin-bottom: 20px;
+  border-top: 2px solid #004c99;
+  padding-top: 15px;
+}
+
+.right-section #passenger-details-form h3 {
+  font-size: 1.5rem;
+  color: #004c99;
+  margin-bottom: 10px;
+}
+
+.right-section #passenger-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Specific styling for the 'Book Flight' button */
+#book-flight-btn {
+  background-color: #004c99;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+#book-flight-btn:hover {
+  background-color: #0066cc;
+}
+
+/* Booking Details */
+.right-section #booking-details {
+  border-top: 2px solid #004c99;
+  padding-top: 15px;
+}
+
+.right-section #booking-details h3 {
+  font-size: 1.5rem;
+  color: #004c99;
+  margin-bottom: 10px;
+}
+
+.right-section #booking-details ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.right-section #booking-details li {
+  margin: 5px 0;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.right-section #clearLocalStorage {
+  margin-top: 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.right-section #clearLocalStorage:hover {
+  background-color: #ff3333;
+}

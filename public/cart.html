@@ -3,7 +3,7 @@
   <head>
     <title>CS6314 Assignment3 YXL220044 EFC200000</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="contact-us.css">
+    <link rel="stylesheet" href="cart.css">
   </head>
   <body>
     <header class="header roboto-bold">Discover Your Next Adventure - Book Stays, Flights, Cruises, & More!</header>
@@ -36,8 +36,30 @@
 
       <section class="right-section">
         <h2>Cart</h2>
-
+        <div id="selected-flights" class="hidden">
+          <h3>Selected Flights:</h3>
+          <ul id="flight-list"></ul>
+          <p id="total-price"></p>
+          <button id="clearLocalStorage">Clear Cart</button>
+        </div>
+      
+        <!-- Form for passenger details -->
+        <div id="passenger-details-form" class="hidden">
+          <h3>Enter Passenger Details:</h3>
+          <div id="passenger-inputs"></div>
+          <button id="book-flight-btn">Book Flight</button>
+        </div>
+      
+        <!-- Booking details -->
+        <div id="booking-details" class="hidden">
+          <h3>Booking Details:</h3>
+          <p id="booking-number"></p>
+          <ul id="booked-flight-info"></ul>
+          <h4>Passenger Information:</h4>
+          <ul id="passenger-info-list"></ul>
+        </div>
       </section>
+      
     </div>
     <footer>
       <div class="footer-container">

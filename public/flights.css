@@ -85,3 +85,36 @@
 .right-section #passenger-form input {
   width: 50px;
 }
+
+/* Button styling for flight selection */
+.select-flight {
+  background-color: #007BFF; /* Blue background */
+  color: white; /* White text */
+  padding: 0.625rem 1rem; /* Padding for better size */
+  border: none; /* Remove default border */
+  border-radius: 0.3125rem; /* Match the input radius */
+  font-size: 1rem; /* Consistent font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, transform 0.3s; /* Transition effects */
+  margin-top: 0.5rem; /* Space above the button */
+  margin-bottom: 0.5rem;
+}
+
+/* Change background color on hover */
+.select-flight:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Active button style */
+.select-flight:active {
+  transform: translateY(0); /* Reset lift effect */
+}
+
+/* Remove button styling for selected flights */
+.selected {
+  background-color: #dc3545; /* Red background for 'Remove' */
+}
+
+.selected:hover {
+  background-color: #c82333; /* Darker red on hover */
+}

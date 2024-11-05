@@ -660,5 +660,16 @@
     <available-seats>93</available-seats>
     <price>285.00</price>
   </flight>
+  <flight>
+    <flight-id>TXCA061</flight-id>
+    <origin>San Francisco</origin>
+    <destination>Dallas</destination>
+    <departure-date>2024-11-03</departure-date>
+    <arrival-date>2024-11-03</arrival-date>
+    <departure-time>20:15</departure-time>
+    <arrival-time>22:35</arrival-time>
+    <available-seats>93</available-seats>
+    <price>285.00</price>
+  </flight>
 
 </flights>
