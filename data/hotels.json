@@ -237,7 +237,7 @@
     "hotel_id": "H027",
     "hotel_name": "Dallas Uptown Inn",
     "city": "Dallas",
-    "available_rooms": 4,
+    "available_rooms": 2,
     "price_per_night": 175,
     "available_from": "2024-09-25",
     "available_to": "2024-12-01"

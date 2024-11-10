@@ -35,14 +35,23 @@ document.addEventListener("DOMContentLoaded", function () {
   flightForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const origin = document.getElementById("origin").value.trim();
-    const destination = document.getElementById("destination").value.trim();
+    const origin = capitalizeWords(document.getElementById("origin").value.trim());
+    const destination = capitalizeWords(document.getElementById("destination").value.trim());
     const departureDateInput = document.getElementById("departure-date").value;
     const returnDateInput = document.getElementById("return-date").value;
     const adults = parseInt(document.getElementById("adults").value) || 0;
     const children = parseInt(document.getElementById("children").value) || 0;
     const infants = parseInt(document.getElementById("infants").value) || 0;
     const isRoundTrip = tripTypeSelect.value === "round-trip";
+
+    // Function to capitalize each word in the input
+    function capitalizeWords(input) {
+      return input
+        .toLowerCase()
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    }
 
     // Clear previous error messages and display
     errorMessage.innerHTML = "";
