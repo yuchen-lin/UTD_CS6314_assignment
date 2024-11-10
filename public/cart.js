@@ -1,3 +1,4 @@
+document.addEventListener("DOMContentLoaded", function () {
 const flightList = document.getElementById("flight-list");
 const selectedFlightsSection = document.getElementById("selected-flights");
 const selectedFlights =
@@ -325,3 +326,95 @@ document.getElementById("clearLocalStorage").addEventListener("click", () => {
   document.getElementById("passenger-details-form").style.display = "none";
   document.getElementById("booking-details").style.display = "none";
 });
+
+});
+
+//----------------Hotel Bookings---------------
+
+document.addEventListener("DOMContentLoaded", function () {
+  const selectedHotelDiv = document.getElementById("selected-hotel");
+  const hotelDetailsList = document.getElementById("hotel-details");
+  const cartData = JSON.parse(localStorage.getItem("cartItem"));
+
+  // Display selected hotel details if cart data exists
+  if (cartData) {
+      selectedHotelDiv.classList.remove("hidden");
+      hotelDetailsList.innerHTML = `
+          <li><strong>Hotel ID:</strong> ${cartData.hotel_id}</li>
+          <li><strong>Hotel Name:</strong> ${cartData.hotel_name}</li>
+          <li><strong>City:</strong> ${cartData.city}</li>
+          <li><strong>Check-in Date:</strong> ${new Date(cartData.checkin_date).toDateString()}</li>
+          <li><strong>Check-out Date:</strong> ${new Date(cartData.checkout_date).toDateString()}</li>
+          <li><strong>Adults:</strong> ${cartData.guests.adults}</li>
+          <li><strong>Children:</strong> ${cartData.guests.children}</li>
+          <li><strong>Infants:</strong> ${cartData.guests.infants}</li>
+          <li><strong>Number of Rooms:</strong> ${cartData.rooms}</li>
+          <li><strong>Price per Night:</strong> $${cartData.price_per_night}</li>
+          <li><strong>Total Price:</strong> $${cartData.total_price.toFixed(2)}</li>
+      `;
+  } else {
+      selectedHotelDiv.innerHTML = "<p>No hotel selected in the cart.</p>";
+  }
+
+  // Book hotel
+  document.getElementById("book-hotel-btn").addEventListener("click", async function () {
+    if (!cartData) {
+        alert("No hotel selected to book.");
+        return;
+    }
+
+    try {
+        // Send booking details to save in XML
+        const bookingResponse = await fetch("http://localhost:3000/save-hotel-booking", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cartData)
+        });
+
+        if (bookingResponse.ok) {
+            alert("Hotel booking confirmed!");
+            
+            // Update available rooms in hotels.json in a separate try-catch block
+            try {
+                const updateResponse = await fetch("http://localhost:3000/update-hotel-rooms", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ hotel_id: cartData.hotel_id, rooms_booked: cartData.rooms })
+                });
+
+                // Log status and response body for debugging
+                console.log("Update Response Status:", updateResponse.status);
+                const updateResponseBody = await updateResponse.json();
+                console.log("Update Response Body:", updateResponseBody);
+
+                if (!updateResponse.ok) {
+                    console.error("Failed to update hotel rooms.");
+                    //alert("Error occurred while updating hotel rooms, but booking was saved.");
+                }
+            } catch (updateError) {
+                console.error("Error updating hotel rooms:", updateError);
+                //alert("Error occurred while updating hotel rooms, but booking was saved.");
+            }
+
+            // Clear cart data after successful booking
+            localStorage.removeItem("cartItem");
+        } else {
+            alert("Booking failed. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error while booking the hotel:", error);
+        alert("An error occurred while confirming the booking.");
+    }
+  });
+
+
+  // Clear cart
+  document.getElementById("clearHotelCart").addEventListener("click", function () {
+      localStorage.removeItem("cartItem");
+      selectedHotelDiv.innerHTML = "<p>Hotel cart cleared.</p>";
+      selectedHotelDiv.classList.add("hidden");
+  });
+
+  
+});
+

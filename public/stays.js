@@ -11,14 +11,24 @@ document.addEventListener("DOMContentLoaded", async function () {
     const displayHotels = document.getElementById("displayHotels");
     const errorMessage = document.getElementById("errorMessage");
 
-    // Load hotel data
     let hotels = [];
-    try {
-        const response = await fetch('hotels.json');
-        hotels = await response.json();
-    } catch (error) {
-        console.error("Failed to load hotels JSON:", error);
+
+    // Function to load hotel data
+    async function loadHotels() {
+        try {
+            const response = await fetch('http://localhost:3000/data/hotels.json', { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            hotels = await response.json();
+            console.log("Hotels data loaded successfully:", hotels);
+        } catch (error) {
+            console.error("Failed to load hotels JSON:", error);
+            alert("An error occurred while loading hotel data. Please try again later.");
+        }
     }
+
+    // Load hotel data at the start
+    await loadHotels();
+
 
     // Initially hide the displayInfo and displayHotels sections
     displayInfo.classList.add("hidden");
@@ -150,7 +160,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                         <input type="radio" id="hotel_${index}" name="hotel" value="${hotel.hotel_id}" class="hotel-radio">
                         <label for="hotel_${index}">
                             <div class="hotel-info">
-                                <h4>${hotel.hotel_name}</h4>
+                                <h4><strong>Name:</strong> ${hotel.hotel_name}</h4>
+                                <p><strong>Hotel-id:</strong> ${hotel.hotel_id}</p>
                                 <p><strong>City:</strong> ${hotel.city}</p>
                                 <p><strong>Check-in Date:</strong> ${new Date(checkinDate).toDateString()}</p>
                                 <p><strong>Check-out Date:</strong> ${new Date(checkoutDate).toDateString()}</p>

@@ -9,3 +9,5 @@ npm install body-parser
 
 To run the server:
 npm server.js
+or 
+npm start

@@ -93,6 +93,7 @@
   border-radius: 5px;
 }
 
+/* Clear Local Storage button */
 .right-section #clearLocalStorage {
   margin-top: 10px;
   background-color: #ff4d4d;
@@ -106,4 +107,68 @@
 
 .right-section #clearLocalStorage:hover {
   background-color: #ff3333;
+}
+
+/* Clear Hotel Cart button */
+.right-section #clearHotelCart {
+  margin-top: 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.right-section #clearHotelCart:hover {
+  background-color: #ff3333;
+}
+
+/* Divider between sections */
+.section-divider {
+  border: 0;
+  border-top: 2px solid #ccc;
+  margin: 20px 0;
+}
+
+/* Hotel section styling (similar to flights) */
+.right-section #selected-hotel {
+  margin-bottom: 20px;
+  border-top: 2px solid #004c99;
+  padding-top: 15px;
+}
+
+.right-section #selected-hotel h3 {
+  font-size: 1.5rem;
+  color: #004c99;
+  margin-bottom: 10px;
+}
+
+.right-section #hotel-details {
+  list-style-type: none;
+  padding: 0;
+}
+
+.right-section #hotel-details li {
+  margin: 5px 0;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+/* Book Hotel button with consistent styling */
+#book-hotel-btn {
+  background-color: #004c99;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+#book-hotel-btn:hover {
+  background-color: #0066cc;
 }

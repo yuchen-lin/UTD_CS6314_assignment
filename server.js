@@ -11,6 +11,9 @@ const port = 3000;
 app.use(cors()); // Enable CORS
 app.use(bodyParser.json());
 
+// Serve the data directory statically to access files like hotels.json
+app.use('/data', express.static(path.join(__dirname, 'data')));
+
 const builder = new xml2js.Builder();
 const dataDirectory = path.join(__dirname, "data"); // Define the path to the data directory
 
@@ -292,3 +295,103 @@ app.post("/save-booking", (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+//---------For hotel booking---------
+// Route to update available rooms in hotels.json
+app.post("/update-hotel-rooms", (req, res) => {
+  const { hotel_id, rooms_booked } = req.body;
+  const filePath = path.join(__dirname, "data", "hotels.json");
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+          console.error("Error reading hotels.json:", err);
+          return res.status(500).json({ message: "Error reading hotels data" });
+      }
+
+      let hotels;
+      try {
+          hotels = JSON.parse(data);
+      } catch (parseErr) {
+          console.error("Error parsing hotels.json:", parseErr);
+          return res.status(500).json({ message: "Error parsing hotels data" });
+      }
+
+      const hotel = hotels.find(h => h.hotel_id === hotel_id);
+      if (!hotel) return res.status(404).json({ message: "Hotel not found" });
+
+      if (hotel.available_rooms < rooms_booked) {
+          return res.status(400).json({ message: "Not enough rooms available" });
+      }
+
+      hotel.available_rooms -= rooms_booked;
+
+      fs.writeFile(filePath, JSON.stringify(hotels, null, 2), (writeErr) => {
+          if (writeErr) {
+              console.error("Error writing hotels.json:", writeErr);
+              return res.status(500).json({ message: "Error updating hotel data" });
+          }
+
+          return res.json({ message: "Hotel rooms updated successfully" });
+      });
+  });
+});
+
+
+
+app.post("/save-hotel-booking", (req, res) => {
+  const bookingData = req.body;
+  const filePath = path.join(__dirname, "data", "hotel_bookings.xml");
+  const builder = new xml2js.Builder();
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+      if (err && err.code === "ENOENT") {
+          // If the file does not exist, create it with the initial booking structure
+          const newBookings = { bookings: { booking: [bookingData] } };
+          const xml = builder.buildObject(newBookings);
+          fs.writeFile(filePath, xml, (writeErr) => {
+              if (writeErr) {
+                  console.error("Error creating XML file:", writeErr);
+                  return res.status(500).json({ message: "Error creating XML file" });
+              }
+              return res.json({ message: "Booking saved successfully!" });
+          });
+      } else if (data.trim() === "") {
+          // If the file is empty, initialize it with the bookings structure
+          const initialBookings = { bookings: { booking: [bookingData] } };
+          const xml = builder.buildObject(initialBookings);
+          fs.writeFile(filePath, xml, (writeErr) => {
+              if (writeErr) {
+                  console.error("Error initializing XML file:", writeErr);
+                  return res.status(500).json({ message: "Error initializing XML file" });
+              }
+              return res.json({ message: "Booking saved successfully!" });
+          });
+      } else {
+          // If the file has data, parse and update it
+          xml2js.parseString(data, (parseErr, result) => {
+              if (parseErr) {
+                  console.error("Error parsing XML file:", parseErr);
+                  return res.status(500).json({ message: "Error parsing XML file" });
+              }
+              
+              if (!result.bookings || !result.bookings.booking) {
+                  // If XML structure is missing, initialize it
+                  result = { bookings: { booking: [bookingData] } };
+              } else {
+                  // Add the new booking to existing bookings
+                  result.bookings.booking.push(bookingData);
+              }
+
+              const updatedXML = builder.buildObject(result);
+              fs.writeFile(filePath, updatedXML, (writeErr) => {
+                  if (writeErr) {
+                      console.error("Error updating XML file:", writeErr);
+                      return res.status(500).json({ message: "Error updating XML file" });
+                  }
+                  return res.json({ message: "Booking saved successfully!" });
+              });
+          });
+      }
+  });
+});
+
