@@ -1,0 +1,363 @@
+[
+    {
+        "hotel_id": "H001",
+        "hotel_name": "Grand Texas Hotel",
+        "city": "Dallas",
+        "available_rooms": 5,
+        "price_per_night": 120,
+        "available_from": "2024-09-03",
+        "available_to": "2024-10-15"
+    },
+    {
+        "hotel_id": "H002",
+        "hotel_name": "Golden Gate Inn",
+        "city": "San Francisco",
+        "available_rooms": 3,
+        "price_per_night": 200,
+        "available_from": "2024-09-10",
+        "available_to": "2024-11-20"
+    },
+    {
+        "hotel_id": "H003",
+        "hotel_name": "Austin River Hotel",
+        "city": "Austin",
+        "available_rooms": 4,
+        "price_per_night": 150,
+        "available_from": "2024-09-20",
+        "available_to": "2024-10-25"
+    },
+    {
+        "hotel_id": "H004",
+        "hotel_name": "Amarillo Suites",
+        "city": "Amarillo",
+        "available_rooms": 6,
+        "price_per_night": 100,
+        "available_from": "2024-10-01",
+        "available_to": "2024-11-10"
+    },
+    {
+        "hotel_id": "H005",
+        "hotel_name": "Dallas Luxury Inn",
+        "city": "Dallas",
+        "available_rooms": 8,
+        "price_per_night": 180,
+        "available_from": "2024-09-15",
+        "available_to": "2024-11-30"
+    },
+    {
+        "hotel_id": "H006",
+        "hotel_name": "San Francisco Bay Hotel",
+        "city": "San Francisco",
+        "available_rooms": 7,
+        "price_per_night": 220,
+        "available_from": "2024-10-05",
+        "available_to": "2024-12-01"
+    },
+    {
+        "hotel_id": "H007",
+        "hotel_name": "Austin Downtown Lodge",
+        "city": "Austin",
+        "available_rooms": 5,
+        "price_per_night": 130,
+        "available_from": "2024-09-25",
+        "available_to": "2024-11-05"
+    },
+    {
+        "hotel_id": "H008",
+        "hotel_name": "El Paso Comfort Inn",
+        "city": "El Paso",
+        "available_rooms": 10,
+        "price_per_night": 90,
+        "available_from": "2024-09-01",
+        "available_to": "2024-10-20"
+    },
+    {
+        "hotel_id": "H009",
+        "hotel_name": "Fort Worth Palace",
+        "city": "Fort Worth",
+        "available_rooms": 4,
+        "price_per_night": 160,
+        "available_from": "2024-10-10",
+        "available_to": "2024-11-25"
+    },
+    {
+        "hotel_id": "H010",
+        "hotel_name": "Sugar Land Suites",
+        "city": "Sugar Land",
+        "available_rooms": 6,
+        "price_per_night": 110,
+        "available_from": "2024-09-15",
+        "available_to": "2024-10-30"
+    },
+    {
+        "hotel_id": "H011",
+        "hotel_name": "Los Angeles Grand Hotel",
+        "city": "Los Angeles",
+        "available_rooms": 12,
+        "price_per_night": 250,
+        "available_from": "2024-10-01",
+        "available_to": "2024-12-01"
+    },
+    {
+        "hotel_id": "H012",
+        "hotel_name": "Santa Monica Seaside",
+        "city": "Santa Monica",
+        "available_rooms": 8,
+        "price_per_night": 230,
+        "available_from": "2024-09-20",
+        "available_to": "2024-11-15"
+    },
+    {
+        "hotel_id": "H013",
+        "hotel_name": "Dallas Central Hotel",
+        "city": "Dallas",
+        "available_rooms": 5,
+        "price_per_night": 140,
+        "available_from": "2024-09-10",
+        "available_to": "2024-10-25"
+    },
+    {
+        "hotel_id": "H014",
+        "hotel_name": "Riverside Retreat",
+        "city": "Riverside",
+        "available_rooms": 9,
+        "price_per_night": 125,
+        "available_from": "2024-10-15",
+        "available_to": "2024-11-28"
+    },
+    {
+        "hotel_id": "H015",
+        "hotel_name": "San Diego Harbor Inn",
+        "city": "San Diego",
+        "available_rooms": 7,
+        "price_per_night": 210,
+        "available_from": "2024-09-22",
+        "available_to": "2024-11-30"
+    },
+    {
+        "hotel_id": "H016",
+        "hotel_name": "Houston Heights Hotel",
+        "city": "Houston",
+        "available_rooms": 11,
+        "price_per_night": 175,
+        "available_from": "2024-10-05",
+        "available_to": "2024-12-01"
+    },
+    {
+        "hotel_id": "H017",
+        "hotel_name": "San Antonio City Lodge",
+        "city": "San Antonio",
+        "available_rooms": 6,
+        "price_per_night": 130,
+        "available_from": "2024-09-30",
+        "available_to": "2024-11-20"
+    },
+    {
+        "hotel_id": "H018",
+        "hotel_name": "Sacramento Valley Inn",
+        "city": "Sacramento",
+        "available_rooms": 8,
+        "price_per_night": 120,
+        "available_from": "2024-09-05",
+        "available_to": "2024-10-18"
+    },
+    {
+        "hotel_id": "H019",
+        "hotel_name": "Irving Comfort Suites",
+        "city": "Irving",
+        "available_rooms": 4,
+        "price_per_night": 100,
+        "available_from": "2024-10-02",
+        "available_to": "2024-11-15"
+    },
+    {
+        "hotel_id": "H020",
+        "hotel_name": "Bakersfield Sun Hotel",
+        "city": "Bakersfield",
+        "available_rooms": 5,
+        "price_per_night": 95,
+        "available_from": "2024-09-12",
+        "available_to": "2024-10-25"
+    }
+    ,
+    {
+        "hotel_id": "H021",
+        "hotel_name": "Santa Clara Residency",
+        "city": "Santa Clara",
+        "available_rooms": 7,
+        "price_per_night": 185,
+        "available_from": "2024-09-08",
+        "available_to": "2024-11-18"
+    },
+    {
+        "hotel_id": "H022",
+        "hotel_name": "Alameda Bay Lodge",
+        "city": "Alameda",
+        "available_rooms": 6,
+        "price_per_night": 170,
+        "available_from": "2024-09-15",
+        "available_to": "2024-10-20"
+    },
+    {
+        "hotel_id": "H023",
+        "hotel_name": "Anaheim Resort",
+        "city": "Anaheim",
+        "available_rooms": 12,
+        "price_per_night": 210,
+        "available_from": "2024-09-20",
+        "available_to": "2024-11-25"
+    },
+    {
+        "hotel_id": "H024",
+        "hotel_name": "Bakersfield Country Inn",
+        "city": "Bakersfield",
+        "available_rooms": 10,
+        "price_per_night": 115,
+        "available_from": "2024-10-05",
+        "available_to": "2024-11-30"
+    },
+    {
+        "hotel_id": "H025",
+        "hotel_name": "Concord City Suites",
+        "city": "Concord",
+        "available_rooms": 8,
+        "price_per_night": 140,
+        "available_from": "2024-09-18",
+        "available_to": "2024-10-28"
+    },
+    {
+        "hotel_id": "H026",
+        "hotel_name": "Corona Palace Hotel",
+        "city": "Corona",
+        "available_rooms": 9,
+        "price_per_night": 150,
+        "available_from": "2024-10-01",
+        "available_to": "2024-11-20"
+    },
+    {
+        "hotel_id": "H027",
+        "hotel_name": "Dallas Uptown Inn",
+        "city": "Dallas",
+        "available_rooms": 7,
+        "price_per_night": 175,
+        "available_from": "2024-09-25",
+        "available_to": "2024-12-01"
+    },
+    {
+        "hotel_id": "H028",
+        "hotel_name": "Denton Garden Hotel",
+        "city": "Denton",
+        "available_rooms": 5,
+        "price_per_night": 120,
+        "available_from": "2024-09-30",
+        "available_to": "2024-11-15"
+    },
+    {
+        "hotel_id": "H029",
+        "hotel_name": "El Monte Comfort Suites",
+        "city": "El Monte",
+        "available_rooms": 6,
+        "price_per_night": 135,
+        "available_from": "2024-10-10",
+        "available_to": "2024-11-25"
+    },
+    {
+        "hotel_id": "H030",
+        "hotel_name": "Fort Worth Lakeside Hotel",
+        "city": "Fort Worth",
+        "available_rooms": 4,
+        "price_per_night": 155,
+        "available_from": "2024-09-15",
+        "available_to": "2024-11-18"
+    },
+    {
+        "hotel_id": "H031",
+        "hotel_name": "Fresno Garden Inn",
+        "city": "Fresno",
+        "available_rooms": 8,
+        "price_per_night": 145,
+        "available_from": "2024-09-05",
+        "available_to": "2024-10-30"
+    },
+    {
+        "hotel_id": "H032",
+        "hotel_name": "Garland Grand Hotel",
+        "city": "Garland",
+        "available_rooms": 6,
+        "price_per_night": 125,
+        "available_from": "2024-09-12",
+        "available_to": "2024-11-12"
+    },
+    {
+        "hotel_id": "H033",
+        "hotel_name": "Irving Plaza Suites",
+        "city": "Irving",
+        "available_rooms": 10,
+        "price_per_night": 165,
+        "available_from": "2024-10-15",
+        "available_to": "2024-11-30"
+    },
+    {
+        "hotel_id": "H034",
+        "hotel_name": "Laredo Luxury Lodge",
+        "city": "Laredo",
+        "available_rooms": 5,
+        "price_per_night": 140,
+        "available_from": "2024-09-18",
+        "available_to": "2024-10-25"
+    },
+    {
+        "hotel_id": "H035",
+        "hotel_name": "Lancaster Riverside Hotel",
+        "city": "Lancaster",
+        "available_rooms": 7,
+        "price_per_night": 175,
+        "available_from": "2024-09-22",
+        "available_to": "2024-11-05"
+    },
+    {
+        "hotel_id": "H036",
+        "hotel_name": "Long Beach Coastal Suites",
+        "city": "Long Beach",
+        "available_rooms": 8,
+        "price_per_night": 225,
+        "available_from": "2024-09-25",
+        "available_to": "2024-12-01"
+    },
+    {
+        "hotel_id": "H037",
+        "hotel_name": "Modesto Plaza Inn",
+        "city": "Modesto",
+        "available_rooms": 5,
+        "price_per_night": 130,
+        "available_from": "2024-09-10",
+        "available_to": "2024-11-28"
+    },
+    {
+        "hotel_id": "H038",
+        "hotel_name": "Odessa Star Hotel",
+        "city": "Odessa",
+        "available_rooms": 6,
+        "price_per_night": 110,
+        "available_from": "2024-09-20",
+        "available_to": "2024-11-15"
+    },
+    {
+        "hotel_id": "H039",
+        "hotel_name": "Ontario Riverside Inn",
+        "city": "Ontario",
+        "available_rooms": 8,
+        "price_per_night": 155,
+        "available_from": "2024-10-02",
+        "available_to": "2024-11-20"
+    },
+    {
+        "hotel_id": "H040",
+        "hotel_name": "Pasadena Heritage Hotel",
+        "city": "Pasadena",
+        "available_rooms": 5,
+        "price_per_night": 150,
+        "available_from": "2024-09-07",
+        "available_to": "2024-11-18"
+    }
+]

@@ -85,3 +85,62 @@ margin-top: 10px;
 .right-section #guest-form input {
     width: 50px;
 }
+
+/* Hotel additions */
+
+#displayHotels {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.hotel-card {
+    display: flex;
+    align-items: flex-start;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s;
+}
+
+.hotel-card:hover {
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.hotel-radio {
+    margin-right: 1rem;
+    transform: scale(1.2);
+}
+
+.hotel-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.hotel-info h4 {
+    margin: 0;
+    color: #333;
+}
+
+.hotel-info p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.cart-button {
+    margin-top: 1rem;
+    padding: 0.7rem 1.5rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cart-button:hover {
+    background-color: #45a049;
+}
