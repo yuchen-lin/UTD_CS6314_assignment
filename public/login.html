@@ -3,7 +3,7 @@
   <head>
     <title>CS6314 Assignment4 YXL220044 EFC200000</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="cart.css">
+    <link rel="stylesheet" href="login.css">
   </head>
   <body>
     <header class="header roboto-bold">Discover Your Next Adventure - Book Stays, Flights, Cruises, & More!</header>
@@ -39,45 +39,22 @@
         <br>
         <div id="current-time"></div>
       </section>
-
       <section class="right-section">
-        <h2>Cart</h2>
-        <div id="selected-flights" class="hidden">
-          <h3>Selected Flights:</h3>
-          <ul id="flight-list"></ul>
-          <p id="total-price"></p>
-          <button id="clearLocalStorage">Clear Flight Cart</button>
-        </div>
-      
-        <!-- Form for passenger details -->
-        <div id="passenger-details-form" class="hidden">
-          <h3>Enter Passenger Details:</h3>
-          <div id="passenger-inputs"></div>
-          <button id="book-flight-btn">Book Flight</button>
-        </div>
-      
-        <!-- Booking details -->
-        <div id="booking-details" class="hidden">
-          <h3>Booking Details:</h3>
-          <p id="booking-number"></p>
-          <ul id="booked-flight-info"></ul>
-          <h4>Passenger Information:</h4>
-          <ul id="passenger-info-list"></ul>
-        </div>
-
-        <!----------------------------------------------->
-
-        <!-- Hotel Booking Details -->
-        <div id="selected-hotel" class="hidden">
-          <h3>Selected Hotel:</h3>
-          <ul id="hotel-details"></ul>
-          <button id="book-hotel-btn">Book Hotel</button>
-          <button id="clearHotelCart">Clear Hotel Cart</button>
-        </div>
-
-
+        <h2>Login</h2>
+        <form id="loginForm">
+          <label for="phone">Phone Number (ddd-ddd-dddd):</label>
+          <input type="text" id="phone" name="phone" required pattern="\d{3}-\d{3}-\d{4}">
+          <br>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+          <br>
+          <div class="button-group">
+            <button type="submit">Login</button>
+            <button type="button" id="logoutButton">Logout</button>
+          </div>
+          <div id="error-message"></div>
+        </form>
       </section>
-      
     </div>
     <footer>
       <div class="footer-container">
@@ -91,10 +68,9 @@
         <p>© 2024 CS6314-Assignment4. All rights reserved.</p>
       </div>
     </footer>
-    <div id="notification"></div>
 
     <script src="time.js"></script>
     <script src="settings.js"></script>
-    <script src="cart.js"></script>
+    <script src="login.js"></script>
   </body>
 </html>

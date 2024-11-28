@@ -1,0 +1,86 @@
+.right-section {
+  padding: 1.5rem;
+}
+
+.right-section h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.right-section label {
+  font-weight: bold;
+  color: #333;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  display: block; /* Ensure labels are above inputs */
+}
+
+.right-section input[type="text"],
+.right-section input[type="password"],
+.right-section input[type="email"],
+.right-section input[type="date"] {
+  padding: 0.75rem; /* Increased padding for better usability */
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.3125rem; /* Rounded corners */
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 1rem; /* Space between fields */
+  transition: border-color 0.3s; /* Smooth transition for focus effect */
+}
+
+.right-section input[type="text"]:focus,
+.right-section input[type="password"]:focus,
+.right-section input[type="email"]:focus,
+.right-section input[type="date"]:focus {
+  border-color: #4CAF50; /* Green border on focus */
+  outline: none; /* Remove default focus outline */
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); /* Add subtle green glow */
+}
+
+.right-section .gender-group {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.5rem; /* Space between gender options */
+  margin-bottom: 1.5rem; /* Space between gender and next element */
+}
+
+.right-section .gender-group label {
+  font-weight: normal; /* Slightly lighter font for gender labels */
+  font-size: 1rem;
+}
+
+.right-section input[type="radio"] {
+  margin-right: 0.5rem;
+  transform: scale(1.2); /* Larger, easier-to-click radio buttons */
+  cursor: pointer;
+}
+
+/* Styling for the submit button */
+.right-section button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.3125rem;
+  font-size: 1.125rem; /* Slightly larger font size for prominence */
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions */
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.right-section button[type="submit"]:hover {
+  background-color: #45a049;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+}
+
+/* Error message styling */
+#error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}

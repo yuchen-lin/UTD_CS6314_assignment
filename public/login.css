@@ -1,0 +1,62 @@
+.right-section {
+  padding: 1.5rem;
+  margin: 0 auto;
+}
+
+.right-section h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.right-section label {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.right-section input {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.3125rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  justify-content: flex-start; /* Align buttons to the left */
+}
+
+.button-group button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.3125rem;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button-group button#logoutButton {
+  background-color: #f44336; /* Red for logout */
+}
+
+.button-group button:hover {
+  background-color: #45a049; /* Dark green for login button hover */
+}
+
+.button-group button#logoutButton:hover {
+  background-color: #d32f2f; /* Dark red for logout button hover */
+}
+
+#error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
