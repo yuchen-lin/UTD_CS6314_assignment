@@ -595,7 +595,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
     // Create the "hotel" table
     db.run(
       `CREATE TABLE IF NOT EXISTS hotel (
-        hotel_id INTEGER PRIMARY KEY,
+        hotel_id TEXT PRIMARY KEY,
         hotel_name TEXT NOT NULL,
         city TEXT NOT NULL,
         price_per_night REAL NOT NULL
@@ -833,3 +833,46 @@ app.post("/upload-flights", (req, res) => {
   });
 });
 //end of flight table upload
+
+// ----Hotels table upload route----
+app.post("/upload-hotels", express.json(), (req, res) => {
+  const hotels = req.body;
+
+  if (!Array.isArray(hotels)) {
+    return res.status(400).json({ message: "Invalid JSON format. Expected an array." });
+  }
+
+  const db = new sqlite3.Database("./data/app.db");
+
+  const insertQuery = `INSERT INTO hotel (hotel_id, hotel_name, city, price_per_night) VALUES (?, ?, ?, ?)`;
+
+  db.serialize(() => {
+    hotels.forEach((hotel) => {
+      db.run(
+        insertQuery,
+        [
+          hotel.hotel_id,
+          hotel.hotel_name,
+          hotel.city,
+          hotel.price_per_night,
+        ],
+        (err) => {
+          if (err) {
+            console.error("Error inserting hotel:", err.message);
+          }
+        }
+      );
+    });
+  });
+
+  db.close((err) => {
+    if (err) {
+      console.error("Error closing the database:", err.message);
+    } else {
+      console.log("Database connection closed.");
+    }
+  });
+
+  res.json({ message: "Hotels uploaded successfully!" });
+});
+// End of hotel table upload

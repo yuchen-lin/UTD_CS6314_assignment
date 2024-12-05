@@ -5,29 +5,28 @@ document.addEventListener("DOMContentLoaded", function () {
   const uploadXmlBtn = document.getElementById("upload-xml-btn");
   const xmlInput = document.getElementById("xml-input");
   const uploadStatus = document.getElementById("upload-status");
+  const uploadJsonBtn = document.getElementById("upload-json-btn");
+  const jsonInput = document.getElementById("json-input");
+  const jsonUploadStatus = document.getElementById("json-upload-status");
 
   // Check if the user is the admin
   if (user && user.phone === adminPhone) {
     adminSection.style.display = "block";
   }
 
-  // Handle the click on the "Upload Flights XML" button
+  // Handle Flights XML upload
   uploadXmlBtn.addEventListener("click", function () {
-    xmlInput.click(); // Trigger the file input
+    xmlInput.click();
   });
 
-  // Handle the XML file selection
   xmlInput.addEventListener("change", function (event) {
     const file = event.target.files[0];
 
     if (file) {
       const reader = new FileReader();
-
-      // Read the XML file
       reader.onload = function (e) {
         const xmlData = e.target.result;
 
-        // Send the XML data to the server
         fetch("http://localhost:3000/upload-flights", {
           method: "POST",
           headers: {
@@ -37,17 +36,55 @@ document.addEventListener("DOMContentLoaded", function () {
         })
           .then((response) => response.json())
           .then((data) => {
-            if (data.message === "Flights uploaded successfully!") {
-              uploadStatus.textContent = "Flights uploaded successfully!";
-            } else {
-              uploadStatus.textContent = "Error uploading flights.";
-              uploadStatus.style.color = "red";
-            }
+            uploadStatus.textContent = data.message || "Error uploading flights.";
           })
           .catch((error) => {
             console.error("Error uploading XML:", error);
             uploadStatus.textContent = "Error uploading flights.";
             uploadStatus.style.color = "red";
+          });
+      };
+
+      reader.readAsText(file);
+    }
+  });
+
+  // Handle Hotels JSON upload
+  uploadJsonBtn.addEventListener("click", function () {
+    jsonInput.click();
+  });
+
+  jsonInput.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+
+      // Read the JSON file
+      reader.onload = function (e) {
+        const jsonData = e.target.result;
+
+        // Send the JSON data to the server
+        fetch("http://localhost:3000/upload-hotels", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: jsonData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.message === "Hotels uploaded successfully!") {
+              jsonUploadStatus.textContent = "Hotels uploaded successfully!";
+            } else {
+              jsonUploadStatus.textContent = "Error uploading hotels.";
+              jsonUploadStatus.style.color = "red";
+            }
+          })
+          .catch((error) => {
+            console.error("Error uploading JSON:", error);
+            jsonUploadStatus.textContent = "Error uploading hotels.";
+            jsonUploadStatus.style.color = "red";
           });
       };
 
