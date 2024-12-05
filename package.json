@@ -15,7 +15,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "firebase": "^10.14.0",
-    "sqlite3": "^5.1.7",
+    "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master",
     "xml2js": "^0.6.2"
   }
 }

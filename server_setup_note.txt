@@ -6,6 +6,7 @@ npm install express
 npm install cors
 npm install xml2js
 npm install body-parser
+npm install https://github.com/mapbox/node-sqlite3/tarball/master
 
 To run the server:
 npm server.js
