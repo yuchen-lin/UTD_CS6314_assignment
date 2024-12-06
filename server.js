@@ -82,57 +82,7 @@ app.post("/create-xml", (req, res) => {
   });
 });
 
-// //update flights seats xml (Deprecated - > Now gets directly from SQL Table)
-// app.post("/update-flight-seats", (req, res) => {
-//   const { flightId, seatsToBook } = req.body; // Expecting flightId and seatsToBook in the request body
-//   const filePath = path.join(dataDirectory, "flights_availableSeats.xml"); // Path to the flights_availableSeats.xml file
-
-//   // Read the existing XML file
-//   fs.readFile(filePath, "utf8", (err, data) => {
-//     if (err && err.code === "ENOENT") {
-//       // If the file does not exist
-//       return res.status(404).json({ message: "XML file not found." });
-//     } else if (err) {
-//       console.error("Error reading XML file:", err);
-//       return res.status(500).json({ message: "Error reading XML file" });
-//     }
-
-//     // Parse the XML data
-//     xml2js.parseString(data, (parseErr, result) => {
-//       if (parseErr) {
-//         console.error("Error parsing XML file:", parseErr);
-//         return res.status(500).json({ message: "Error parsing XML file" });
-//       }
-
-//       // Find the flight by flightId
-//       const flight = result.flights.flight.find((f) => f["flight-id"][0] === flightId);
-//       if (flight) {
-//         const availableSeats = parseInt(flight["available-seats"][0]);
-//         if (availableSeats >= seatsToBook) {
-//           // Update available seats
-//           flight["available-seats"][0] = (availableSeats - seatsToBook).toString();
-
-//           // Rebuild the XML and write it back to the file
-//           const builder = new xml2js.Builder();
-//           const xml = builder.buildObject(result);
-
-//           fs.writeFile(filePath, xml, (writeErr) => {
-//             if (writeErr) {
-//               console.error("Error writing XML file:", writeErr);
-//               return res.status(500).json({ message: "Error updating XML file" });
-//             }
-
-//             return res.json({ message: "Available seats updated successfully!" });
-//           });
-//         } else {
-//           return res.status(400).json({ message: "Not enough seats available." });
-//         }
-//       } else {
-//         return res.status(404).json({ message: "Flight not found." });
-//       }
-//     });
-//   });
-// });
+//--------FLIGHTS---------------
 
 // update flights seats sql
 app.post("/update-flight-seats", (req, res) => {
@@ -161,108 +111,6 @@ app.post("/update-flight-seats", (req, res) => {
   });
 });
 
-
-// // Search Flights xml for flights page (Deprecated - > Now gets directly from SQL Table)
-// app.post("/search-flights", (req, res) => {
-//   const { origin, destination, departureDate, adults, children, infants } =
-//     req.body;
-
-//   const filePath = path.join(dataDirectory, "flights_availableSeats.xml");
-
-//   // Read the available flights XML file
-//   fs.readFile(filePath, (err, data) => {
-//     if (err) {
-//       console.error("Error reading flights XML file:", err);
-//       return res
-//         .status(500)
-//         .json({ message: "Error reading flights XML file" });
-//     }
-
-//     // Parse the XML data
-//     xml2js.parseString(data, (parseErr, result) => {
-//       if (parseErr) {
-//         console.error("Error parsing flights XML file:", parseErr);
-//         return res
-//           .status(500)
-//           .json({ message: "Error parsing flights XML file" });
-//       }
-
-//       // Filter flights based on the input criteria
-//       const flights = result.flights.flight; // Adjust based on the XML structure
-//       const availableFlights = flights.filter((flight) => {
-//         // Check if departure-date exists and is an array
-//         if (
-//           !flight["departure-date"] ||
-//           flight["departure-date"].length === 0
-//         ) {
-//           console.warn("Flight departure-date is undefined or empty:", flight);
-//           return false; // Exclude this flight
-//         }
-
-//         // Access the first element of the departure-date
-//         const flightDate = new Date(flight["departure-date"][0]); // Ensure this is the correct index
-//         if (isNaN(flightDate)) {
-//           console.warn("Invalid flightDate for flight:", flight);
-//           return false; // Exclude this flight
-//         }
-
-//         // Convert the requested departureDate to a Date object for comparison
-//         const requestedDate = new Date(departureDate);
-
-//         // Check if the flight date is within 3 days before or after the requested departure date
-//         const threeDaysBefore = new Date(requestedDate);
-//         threeDaysBefore.setDate(requestedDate.getDate() - 3);
-
-//         const threeDaysAfter = new Date(requestedDate);
-//         threeDaysAfter.setDate(requestedDate.getDate() + 3);
-
-//         // Include flights that are within the range of three days before and after the requested date
-//         if (flightDate < threeDaysBefore || flightDate > threeDaysAfter) {
-//           return false; // Exclude flights that are outside the 3-day range
-//         }
-
-//         // Check if origin matches
-//         if (flight["origin"][0] !== origin) {
-//           return false; // Exclude flights that don't match the origin
-//         }
-
-//         // Check if destination matches
-//         if (flight["destination"][0] !== destination) {
-//           return false; // Exclude flights that don't match the destination
-//         }
-
-//         // Calculate total number of passengers
-//         const totalPassengers = adults + children + infants;
-
-//         // Get the available seats for the flight
-//         const availableSeats = parseInt(flight["available-seats"][0]) || 0;
-
-//         // Validate passenger counts against available seats
-//         if (totalPassengers > availableSeats) {
-//           return false; // Exclude flights that do not have enough available seats
-//         }
-
-//         // If all checks pass, include this flight
-//         return true;
-//       });
-
-//       // Now check if there are exact matches within availableFlights
-//       const exactDateFlights = availableFlights.filter((flight) => {
-//         const flightDate = new Date(flight["departure-date"][0]);
-//         return (
-//           flightDate.toDateString() === new Date(departureDate).toDateString()
-//         );
-//       });
-
-//       // Return exact date flights if available; otherwise return all available flights
-//       if (exactDateFlights.length > 0) {
-//         return res.json(exactDateFlights);
-//       } else {
-//         return res.json(availableFlights);
-//       }
-//     });
-//   });
-// });
 
 // Search Flights SQL for flights page
 app.post("/search-flights", (req, res) => {
@@ -301,47 +149,6 @@ app.post("/search-flights", (req, res) => {
 });
 
 
-// Get flight data from xml (Deprecated - > Now gets directly from SQL Table)
-// app.get("/get-flight-details", (req, res) => {
-//   const flightId = req.query["flightId"];
-//   if (!flightId) {
-//     return res.status(400).json({ message: "Flight ID is required" });
-//   }
-
-//   const filePath = path.join(dataDirectory, "flights_availableSeats.xml");
-
-//   // Read the XML file and handle the request
-//   fs.readFile(filePath, (err, data) => {
-//     if (err) {
-//       console.error("Error reading flights XML file:", err);
-//       return res
-//         .status(500)
-//         .json({ message: "Error reading flights XML file" });
-//     }
-
-//     // Parse XML data and respond
-//     xml2js.parseString(data, (parseErr, result) => {
-//       if (parseErr) {
-//         console.error("Error parsing flights XML file:", parseErr);
-//         return res
-//           .status(500)
-//           .json({ message: "Error parsing flights XML file" });
-//       }
-
-//       const flights = result.flights.flight;
-//       const flightInfo = flights.find(
-//         (flight) => flight["flight-id"][0] === flightId
-//       );
-
-//       if (!flightInfo) {
-//         return res.status(404).json({ message: "Flight not found" });
-//       }
-
-//       return res.json(flightInfo);
-//     });
-//   });
-// });
-
 // Get flight data from sql table
 app.get("/get-flight-details", (req, res) => {
   const { flightId } = req.query;
@@ -363,6 +170,99 @@ app.get("/get-flight-details", (req, res) => {
     }
 
     res.json(row);
+  });
+});
+
+// book flight data sql table
+app.post("/book-flight", (req, res) => {
+  const { flightId, passengers } = req.body;
+
+  if (!flightId || !passengers || passengers.length === 0) {
+      return res.status(400).json({ message: "Invalid booking data." });
+  }
+
+  const totalPassengers = passengers.length;
+
+  // Fetch flight details
+  db.get("SELECT * FROM flights WHERE flight_id = ?", [flightId], (err, flight) => {
+      if (err || !flight) {
+          console.error("Error fetching flight:", err.message);
+          return res.status(404).json({ message: "Flight not found." });
+      }
+
+      if (flight.available_seats < totalPassengers) {
+          return res.status(400).json({ message: "Not enough seats available." });
+      }
+
+      // Calculate total price
+      const totalPrice = passengers.reduce((total, passenger) => {
+          const price = passenger.category === "infant"
+              ? flight.price * 0.1
+              : passenger.category === "child"
+              ? flight.price * 0.7
+              : flight.price;
+          return total + price;
+      }, 0);
+
+      // Start transaction
+      db.serialize(() => {
+          // Insert into flight_booking
+          db.run(
+              `INSERT INTO flight_booking (flight_id, total_price) VALUES (?, ?)`,
+              [flightId, totalPrice],
+              function (err) {
+                  if (err) {
+                      console.error("Error inserting flight booking:", err.message);
+                      return res.status(500).json({ message: "Booking failed." });
+                  }
+
+                  const flightBookingId = this.lastID;
+
+                  // Insert passengers and tickets
+                  passengers.forEach((passenger) => {
+                      db.run(
+                          `INSERT INTO passenger (ssn, first_name, last_name, dob, category) VALUES (?, ?, ?, ?, ?)`,
+                          [passenger.ssn, passenger.firstName, passenger.lastName, passenger.dob, passenger.category],
+                          (err) => {
+                              if (err && !err.message.includes("UNIQUE")) {
+                                  console.error("Error inserting passenger:", err.message);
+                              }
+                          }
+                      );
+
+                      const price = passenger.category === "infant"
+                          ? flight.price * 0.1
+                          : passenger.category === "child"
+                          ? flight.price * 0.7
+                          : flight.price;
+
+                      db.run(
+                          `INSERT INTO tickets (flight_booking_id, ssn, price) VALUES (?, ?, ?)`,
+                          [flightBookingId, passenger.ssn, price],
+                          (err) => {
+                              if (err) {
+                                  console.error("Error inserting ticket:", err.message);
+                              }
+                          }
+                      );
+                  });
+
+                  // Update available seats
+                  db.run(
+                      `UPDATE flights SET available_seats = available_seats - ? WHERE flight_id = ?`,
+                      [totalPassengers, flightId],
+                      (err) => {
+                          if (err) {
+                              console.error("Error updating seats:", err.message);
+                              return res.status(500).json({ message: "Failed to update seats." });
+                          }
+
+                          res.json({ flightBookingId, message: "Booking successful!" });
+                      }
+                  );
+              }
+          );
+      });
   });
 });
 
@@ -876,3 +776,35 @@ app.post("/upload-hotels", express.json(), (req, res) => {
   res.json({ message: "Hotels uploaded successfully!" });
 });
 // End of hotel table upload
+
+// Route to fetch hotels based on filters
+app.get("/hotels", (req, res) => {
+  const { city, checkin, checkout, rooms } = req.query;
+
+  const db = new sqlite3.Database("./data/app.db");
+
+  // Query to find available hotels
+  const query = `
+    SELECT * FROM hotel
+    WHERE LOWER(city) = LOWER(?)
+  `;
+
+  db.all(query, [city], (err, rows) => {
+    if (err) {
+      console.error("Error fetching hotels:", err.message);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    // Assuming check-in and check-out date range validation is handled in the client,
+    // you can apply additional server-side validation here if necessary.
+
+    res.json(rows); // Return matching hotels
+  });
+
+  db.close((err) => {
+    if (err) {
+      console.error("Error closing the database:", err.message);
+    }
+  });
+});
