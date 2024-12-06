@@ -175,119 +175,184 @@ app.get("/get-flight-details", (req, res) => {
 
 // book flight data sql table
 app.post("/book-flight", (req, res) => {
-  const { flightId, passengers } = req.body;
+  const { flights, passengers, totalPrice } = req.body;
 
-  if (!flightId || !passengers || passengers.length === 0) {
-      return res.status(400).json({ message: "Invalid booking data." });
+  db.serialize(() => {
+    const bookingId = `BOOK-${Date.now()}`;
+    const insertBooking = `
+      INSERT INTO flight_booking (flight_booking_id, flight_id, total_price) 
+      VALUES (?, ?, ?)`;
+
+    flights.forEach((flight) => {
+      db.run(insertBooking, [bookingId, flight.flightId, totalPrice], (err) => {
+        if (err) {
+          console.error("Error inserting booking:", err.message);
+          return res.status(500).json({ message: "Error inserting booking." });
+        }
+      });
+
+      // Insert tickets and passenger details
+      passengers.forEach((passenger, index) => {
+        const ticketId = `TICK-${Date.now()}-${index}`;
+        const insertTicket = `
+          INSERT INTO tickets (ticket_id, flight_booking_id, ssn, price) 
+          VALUES (?, ?, ?, ?)`;
+        const passengerPrice =
+          index < flight.adults
+            ? flight.price
+            : index < flight.adults + flight.children
+            ? flight.price * 0.7
+            : flight.price * 0.1;
+
+        db.run(insertTicket, [ticketId, bookingId, passenger.ssn, passengerPrice], (err) => {
+          if (err) {
+            console.error("Error inserting ticket:", err.message);
+            return res.status(500).json({ message: "Error inserting ticket." });
+          }
+        });
+
+        const insertPassenger = `
+          INSERT INTO passenger (ssn, first_name, last_name, dob, category) 
+          VALUES (?, ?, ?, ?, ?)`;
+
+        db.run(insertPassenger, [
+          passenger.ssn,
+          passenger.firstName,
+          passenger.lastName,
+          passenger.dob,
+          passenger.category,
+        ], (err) => {
+          if (err) {
+            console.error("Error inserting passenger:", err.message);
+            return res.status(500).json({ message: "Error inserting passenger." });
+          }
+        });
+      });
+
+      // Update available seats
+      const updateSeats = `
+        UPDATE flights 
+        SET available_seats = available_seats - ? 
+        WHERE flight_id = ?`;
+
+      db.run(updateSeats, [flight.adults + flight.children + flight.infants, flight.flightId], (err) => {
+        if (err) {
+          console.error("Error updating seats:", err.message);
+          return res.status(500).json({ message: "Error updating seats." });
+        }
+      });
+    });
+
+    res.json({ message: "Booking successful!", bookingId });
+  });
+});
+
+app.post("/save-booking", (req, res) => {
+  const { bookingNumber, flights, passengers } = req.body;
+
+  if (!flights || flights.length === 0 || !passengers || passengers.length === 0) {
+    return res.status(400).json({ message: "Invalid booking details." });
   }
 
-  const totalPassengers = passengers.length;
+  const db = new sqlite3.Database("./data/app.db");
 
-  // Fetch flight details
-  db.get("SELECT * FROM flights WHERE flight_id = ?", [flightId], (err, flight) => {
-      if (err || !flight) {
-          console.error("Error fetching flight:", err.message);
-          return res.status(404).json({ message: "Flight not found." });
-      }
+  db.serialize(() => {
+    // Insert into flight_booking table
+    const insertBookingQuery = `
+      INSERT INTO flight_booking (flight_id, total_price)
+      VALUES (?, ?)
+    `;
 
-      if (flight.available_seats < totalPassengers) {
-          return res.status(400).json({ message: "Not enough seats available." });
-      }
+    flights.forEach((flight) => {
+      const { flightId, adults, children, infants } = flight;
+      const totalSeats = adults + children + infants;
+      const totalPrice = flight.adults * flight.price +
+                         flight.children * (flight.price * 0.7) +
+                         flight.infants * (flight.price * 0.1);
 
-      // Calculate total price
-      const totalPrice = passengers.reduce((total, passenger) => {
-          const price = passenger.category === "infant"
-              ? flight.price * 0.1
-              : passenger.category === "child"
-              ? flight.price * 0.7
-              : flight.price;
-          return total + price;
-      }, 0);
+      db.run(insertBookingQuery, [flightId, totalPrice], function (err) {
+        if (err) {
+          console.error("Error inserting into flight_booking:", err.message);
+          return res.status(500).json({ message: "Error saving booking." });
+        }
 
-      // Start transaction
-      db.serialize(() => {
-          // Insert into flight_booking
-          db.run(
-              `INSERT INTO flight_booking (flight_id, total_price) VALUES (?, ?)`,
-              [flightId, totalPrice],
-              function (err) {
-                  if (err) {
-                      console.error("Error inserting flight booking:", err.message);
-                      return res.status(500).json({ message: "Booking failed." });
-                  }
+        const flightBookingId = this.lastID; // Get the inserted flight_booking_id
 
-                  const flightBookingId = this.lastID;
+        // Insert passengers and tickets
+        const insertPassengerQuery = `
+          INSERT INTO passenger (ssn, first_name, last_name, dob, category)
+          VALUES (?, ?, ?, ?, ?)
+        `;
 
-                  // Insert passengers and tickets
-                  passengers.forEach((passenger) => {
-                      db.run(
-                          `INSERT INTO passenger (ssn, first_name, last_name, dob, category) VALUES (?, ?, ?, ?, ?)`,
-                          [passenger.ssn, passenger.firstName, passenger.lastName, passenger.dob, passenger.category],
-                          (err) => {
-                              if (err && !err.message.includes("UNIQUE")) {
-                                  console.error("Error inserting passenger:", err.message);
-                              }
-                          }
-                      );
+        const insertTicketQuery = `
+          INSERT INTO tickets (flight_booking_id, ssn, price)
+          VALUES (?, ?, ?)
+        `;
 
-                      const price = passenger.category === "infant"
-                          ? flight.price * 0.1
-                          : passenger.category === "child"
-                          ? flight.price * 0.7
-                          : flight.price;
+        passengers.forEach((passenger) => {
+          const { ssn, firstName, lastName, dob } = passenger;
 
-                      db.run(
-                          `INSERT INTO tickets (flight_booking_id, ssn, price) VALUES (?, ?, ?)`,
-                          [flightBookingId, passenger.ssn, price],
-                          (err) => {
-                              if (err) {
-                                  console.error("Error inserting ticket:", err.message);
-                              }
-                          }
-                      );
-                  });
+          // Determine the category based on passenger's age
+          const age = new Date().getFullYear() - new Date(dob).getFullYear();
+          const category = age < 2 ? "Infant" : age < 12 ? "Child" : "Adult";
 
-                  // Update available seats
-                  db.run(
-                      `UPDATE flights SET available_seats = available_seats - ? WHERE flight_id = ?`,
-                      [totalPassengers, flightId],
-                      (err) => {
-                          if (err) {
-                              console.error("Error updating seats:", err.message);
-                              return res.status(500).json({ message: "Failed to update seats." });
-                          }
+          // Insert passenger
+          db.run(insertPassengerQuery, [ssn, firstName, lastName, dob, category], (err) => {
+            if (err) {
+              console.error("Error inserting passenger:", err.message);
+              // Skip duplicate passenger (already exists)
+            } else {
+              // Insert ticket
+              const ticketPrice =
+                category === "Infant"
+                  ? flight.price * 0.1
+                  : category === "Child"
+                  ? flight.price * 0.7
+                  : flight.price;
 
-                          res.json({ flightBookingId, message: "Booking successful!" });
-                      }
-                  );
-              }
-          );
+              db.run(insertTicketQuery, [flightBookingId, ssn, ticketPrice], (err) => {
+                if (err) {
+                  console.error("Error inserting ticket:", err.message);
+                }
+              });
+            }
+          });
+        });
       });
+    });
+
+    res.json({ message: "Booking and tickets saved successfully!" });
+  });
+
+  db.close((err) => {
+    if (err) {
+      console.error("Error closing the database:", err.message);
+    }
   });
 });
 
 
 //---------For hotel booking---------
 // Handle booking information submission
-app.post("/save-booking", (req, res) => {
-  const bookingData = req.body; // Expecting booking data from the client
-  const bookingNumber = bookingData.bookingNumber; // Extract booking number
-  const filePath = path.join(dataDirectory, `${bookingNumber}.json`); // Define the path for the JSON file
+// app.post("/save-booking", (req, res) => {
+//   const bookingData = req.body; // Expecting booking data from the client
+//   const bookingNumber = bookingData.bookingNumber; // Extract booking number
+//   const filePath = path.join(dataDirectory, `${bookingNumber}.json`); // Define the path for the JSON file
 
-  // Write the booking data to a JSON file
-  fs.writeFile(filePath, JSON.stringify(bookingData, null, 2), (err) => {
-    if (err) {
-      console.error("Error writing booking JSON file:", err);
-      return res.status(500).json({ message: "Error saving booking data" });
-    }
+//   // Write the booking data to a JSON file
+//   fs.writeFile(filePath, JSON.stringify(bookingData, null, 2), (err) => {
+//     if (err) {
+//       console.error("Error writing booking JSON file:", err);
+//       return res.status(500).json({ message: "Error saving booking data" });
+//     }
 
-    return res.json({ message: "Booking saved successfully!" });
-  });
-});
+//     return res.json({ message: "Booking saved successfully!" });
+//   });
+// });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on http://localhost:${port}`);
+// });
 
 // Route to update available rooms in hotels.json
 app.post("/update-hotel-rooms", (req, res) => {
@@ -331,60 +396,102 @@ app.post("/update-hotel-rooms", (req, res) => {
 // save hotel booking
 app.post("/save-hotel-booking", (req, res) => {
   const bookingData = req.body;
-  const filePath = path.join(__dirname, "data", "hotel_bookings.xml");
-  const builder = new xml2js.Builder();
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-      if (err && err.code === "ENOENT") {
-          // If the file does not exist, create it with the initial booking structure
-          const newBookings = { bookings: { booking: [bookingData] } };
-          const xml = builder.buildObject(newBookings);
-          fs.writeFile(filePath, xml, (writeErr) => {
-              if (writeErr) {
-                  console.error("Error creating XML file:", writeErr);
-                  return res.status(500).json({ message: "Error creating XML file" });
-              }
-              return res.json({ message: "Booking saved successfully!" });
-          });
-      } else if (data.trim() === "") {
-          // If the file is empty, initialize it with the bookings structure
-          const initialBookings = { bookings: { booking: [bookingData] } };
-          const xml = builder.buildObject(initialBookings);
-          fs.writeFile(filePath, xml, (writeErr) => {
-              if (writeErr) {
-                  console.error("Error initializing XML file:", writeErr);
-                  return res.status(500).json({ message: "Error initializing XML file" });
-              }
-              return res.json({ message: "Booking saved successfully!" });
-          });
-      } else {
-          // If the file has data, parse and update it
-          xml2js.parseString(data, (parseErr, result) => {
-              if (parseErr) {
-                  console.error("Error parsing XML file:", parseErr);
-                  return res.status(500).json({ message: "Error parsing XML file" });
-              }
-              
-              if (!result.bookings || !result.bookings.booking) {
-                  // If XML structure is missing, initialize it
-                  result = { bookings: { booking: [bookingData] } };
-              } else {
-                  // Add the new booking to existing bookings
-                  result.bookings.booking.push(bookingData);
-              }
+  const db = new sqlite3.Database("./data/app.db");
 
-              const updatedXML = builder.buildObject(result);
-              fs.writeFile(filePath, updatedXML, (writeErr) => {
-                  if (writeErr) {
-                      console.error("Error updating XML file:", writeErr);
-                      return res.status(500).json({ message: "Error updating XML file" });
-                  }
-                  return res.json({ message: "Booking saved successfully!" });
-              });
-          });
+  const insertQuery = `
+    INSERT INTO hotel_booking (
+      hotel_id, check_in_date, check_out_date, number_of_rooms, 
+      price_per_night, total_price
+    ) VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  db.run(
+    insertQuery,
+    [
+      bookingData.hotel_id,
+      bookingData.checkin_date,
+      bookingData.checkout_date,
+      bookingData.rooms,
+      bookingData.price_per_night,
+      bookingData.total_price,
+    ],
+    function (err) {
+      if (err) {
+        console.error("Error saving booking:", err.message);
+        return res.status(500).json({ message: "Error saving booking data." });
       }
+
+      console.log(`Booking saved with ID: ${this.lastID}`);
+      res.json({ message: "Booking saved successfully!", booking_id: this.lastID });
+    }
+  );
+
+  db.close((err) => {
+    if (err) {
+      console.error("Error closing the database:", err.message);
+    }
   });
 });
+
+
+// // save hotel booking
+// app.post("/save-hotel-booking", (req, res) => {
+//   const bookingData = req.body;
+//   const filePath = path.join(__dirname, "data", "hotel_bookings.xml");
+//   const builder = new xml2js.Builder();
+
+//   fs.readFile(filePath, "utf8", (err, data) => {
+//       if (err && err.code === "ENOENT") {
+//           // If the file does not exist, create it with the initial booking structure
+//           const newBookings = { bookings: { booking: [bookingData] } };
+//           const xml = builder.buildObject(newBookings);
+//           fs.writeFile(filePath, xml, (writeErr) => {
+//               if (writeErr) {
+//                   console.error("Error creating XML file:", writeErr);
+//                   return res.status(500).json({ message: "Error creating XML file" });
+//               }
+//               return res.json({ message: "Booking saved successfully!" });
+//           });
+//       } else if (data.trim() === "") {
+//           // If the file is empty, initialize it with the bookings structure
+//           const initialBookings = { bookings: { booking: [bookingData] } };
+//           const xml = builder.buildObject(initialBookings);
+//           fs.writeFile(filePath, xml, (writeErr) => {
+//               if (writeErr) {
+//                   console.error("Error initializing XML file:", writeErr);
+//                   return res.status(500).json({ message: "Error initializing XML file" });
+//               }
+//               return res.json({ message: "Booking saved successfully!" });
+//           });
+//       } else {
+//           // If the file has data, parse and update it
+//           xml2js.parseString(data, (parseErr, result) => {
+//               if (parseErr) {
+//                   console.error("Error parsing XML file:", parseErr);
+//                   return res.status(500).json({ message: "Error parsing XML file" });
+//               }
+              
+//               if (!result.bookings || !result.bookings.booking) {
+//                   // If XML structure is missing, initialize it
+//                   result = { bookings: { booking: [bookingData] } };
+//               } else {
+//                   // Add the new booking to existing bookings
+//                   result.bookings.booking.push(bookingData);
+//               }
+
+//               const updatedXML = builder.buildObject(result);
+//               fs.writeFile(filePath, updatedXML, (writeErr) => {
+//                   if (writeErr) {
+//                       console.error("Error updating XML file:", writeErr);
+//                       return res.status(500).json({ message: "Error updating XML file" });
+//                   }
+//                   return res.json({ message: "Booking saved successfully!" });
+//               });
+//           });
+//       }
+//   });
+// });
 
 // -----for register.js -----
 const dbPath = path.join(__dirname, "data", "app.db");
@@ -551,6 +658,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
     );
   }
 });
+
 
 // Registration endpoint
 app.post("/register", async (req, res) => {
