@@ -1,11 +1,12 @@
-document.addEventListener("DOMContentLoaded", async function () {
+
+document.addEventListener("DOMContentLoaded", function () {
   const flightList = document.getElementById("flight-list");
   const selectedFlightsSection = document.getElementById("selected-flights");
-  const passengerInputs = document.getElementById("passenger-inputs");
   const selectedFlights = JSON.parse(localStorage.getItem("selectedFlights")) || [];
   flightList.innerHTML = ""; // Clear existing list
 
   let totalPrice = 0;
+  const passengerInputs = document.getElementById("passenger-inputs");
 
   // Clear local storage and reset the page
   document.getElementById("clearLocalStorage").addEventListener("click", () => {
@@ -19,74 +20,20 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Check if there are any selected flights
   if (selectedFlights.departure && selectedFlights.departure.length > 0) {
-    // Remove the "hidden" class or set the display style to show the section
+    // Show the selected flights section
     selectedFlightsSection.classList.remove("hidden");
     selectedFlightsSection.style.display = "block";
 
     // Process each selected departure flight
-    for (let index = 0; index < selectedFlights.departure.length; index++) {
-      const data = selectedFlights.departure[index];
+    selectedFlights.departure.forEach((data, index) => {
       const { flightId, adults, children, infants } = data;
 
-      try {
-        const response = await fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`);
-        const flight = await response.json();
-
-        // Calculate the price
-        const adultPrice = flight.price;
-        const childPrice = adultPrice * 0.7;
-        const infantPrice = adultPrice * 0.1;
-        const flightTotal =
-          adults * adultPrice + children * childPrice + infants * infantPrice;
-        totalPrice += flightTotal;
-
-        // Create and populate list item with flight details
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <p>Departure Flight:</p>
-          <p>Flight ID: ${flight.flight_id}</p>
-          <p>Origin: ${flight.origin}</p>
-          <p>Destination: ${flight.destination}</p>
-          <p>Departure Date: ${flight.departure_date}</p>
-          <p>Departure Time: ${flight.departure_time}</p>
-          <p>Arrival Date: ${flight.arrival_date}</p>
-          <p>Arrival Time: ${flight.arrival_time}</p>
-          <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
-        `;
-        flightList.appendChild(li);
-
-        // Create input fields for passenger details
-        for (let i = 0; i < adults + children + infants; i++) {
-          const passengerDiv = document.createElement("div");
-          passengerDiv.innerHTML = `
-            <h4>Passenger ${i + 1}</h4>
-            <label>First Name: <input type="text" id="first-name-${index}-${i}" required></label>
-            <label>Last Name: <input type="text" id="last-name-${index}-${i}" required></label>
-            <label>Date of Birth: <input type="date" id="dob-${index}-${i}" required></label>
-            <label>SSN: <input type="text" id="ssn-${index}-${i}" required></label>
-          `;
-          passengerInputs.appendChild(passengerDiv);
-        }
-      } catch (error) {
-        console.error("Error fetching flight details:", error);
-        const li = document.createElement("li");
-        li.textContent = `Failed to load details for Flight ID: ${flightId}`;
-        flightList.appendChild(li);
-      }
-    }
-
-    // Process return flights if present
-    if (selectedFlights.return && selectedFlights.return.length > 0) {
-      for (let index = 0; index < selectedFlights.return.length; index++) {
-        const data = selectedFlights.return[index];
-        const { flightId, adults, children, infants } = data;
-
-        try {
-          const response = await fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`);
-          const flight = await response.json();
-
+      // Fetch flight details for the departure flight
+      fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`)
+        .then((response) => response.json())
+        .then((flight) => {
           // Calculate the price
-          const adultPrice = flight.price;
+          const adultPrice = parseFloat(flight["price"][0]);
           const childPrice = adultPrice * 0.7;
           const infantPrice = adultPrice * 0.1;
           const flightTotal =
@@ -96,41 +43,99 @@ document.addEventListener("DOMContentLoaded", async function () {
           // Create and populate list item with flight details
           const li = document.createElement("li");
           li.innerHTML = `
-            <p>Return Flight:</p>
-            <p>Flight ID: ${flight.flight_id}</p>
-            <p>Origin: ${flight.origin}</p>
-            <p>Destination: ${flight.destination}</p>
-            <p>Departure Date: ${flight.departure_date}</p>
-            <p>Departure Time: ${flight.departure_time}</p>
-            <p>Arrival Date: ${flight.arrival_date}</p>
-            <p>Arrival Time: ${flight.arrival_time}</p>
+            <p>Departure Flight:</p>
+            <p>Flight ID: ${flight["flight-id"][0]}</p>
+            <p>Origin: ${flight["origin"][0]}</p>
+            <p>Destination: ${flight["destination"][0]}</p>
+            <p>Departure Date: ${flight["departure-date"][0]}</p>
+            <p>Departure Time: ${flight["departure-time"][0]}</p>
+            <p>Arrival Date: ${flight["arrival-date"][0]}</p>
+            <p>Arrival Time: ${flight["arrival-time"][0]}</p>
             <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
           `;
           flightList.appendChild(li);
-        } catch (error) {
+
+          // Create input fields for passenger details
+          for (let i = 0; i < adults + children + infants; i++) {
+            const passengerDiv = document.createElement("div");
+            passengerDiv.innerHTML = `
+              <h4>Passenger ${i + 1}</h4>
+              <label>First Name: <input type="text" id="first-name-${index}-${i}" required></label>
+              <label>Last Name: <input type="text" id="last-name-${index}-${i}" required></label>
+              <label>Date of Birth: <input type="date" id="dob-${index}-${i}" required></label>
+              <label>SSN: <input type="text" id="ssn-${index}-${i}" required></label>
+            `;
+            passengerInputs.appendChild(passengerDiv);
+          }
+
+          // Display total price
+          document.getElementById("total-price").textContent = `Total Price: $${totalPrice.toFixed(2)}`;
+
+          // Show the passenger details form
+          document.getElementById("passenger-details-form").classList.remove("hidden");
+          document.getElementById("passenger-details-form").style.display = "block";
+        })
+        .catch((error) => {
           console.error("Error fetching flight details:", error);
           const li = document.createElement("li");
           li.textContent = `Failed to load details for Flight ID: ${flightId}`;
           flightList.appendChild(li);
-        }
-      }
+        });
+    });
+
+    // Process return flights if present
+    if (selectedFlights.return && selectedFlights.return.length > 0) {
+      selectedFlights.return.forEach((data, index) => {
+        const { flightId, adults, children, infants } = data;
+
+        // Fetch flight details for the return flight
+        fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`)
+          .then((response) => response.json())
+          .then((flight) => {
+            // Calculate the price
+            const adultPrice = parseFloat(flight["price"][0]);
+            const childPrice = adultPrice * 0.7;
+            const infantPrice = adultPrice * 0.1;
+            const flightTotal =
+              adults * adultPrice + children * childPrice + infants * infantPrice;
+            totalPrice += flightTotal;
+
+            // Create and populate list item with flight details
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <p>Return Flight:</p>
+              <p>Flight ID: ${flight["flight-id"][0]}</p>
+              <p>Origin: ${flight["origin"][0]}</p>
+              <p>Destination: ${flight["destination"][0]}</p>
+              <p>Departure Date: ${flight["departure-date"][0]}</p>
+              <p>Departure Time: ${flight["departure-time"][0]}</p>
+              <p>Arrival Date: ${flight["arrival-date"][0]}</p>
+              <p>Arrival Time: ${flight["arrival-time"][0]}</p>
+              <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
+            `;
+            flightList.appendChild(li);
+
+            // Update total price display after return flights
+            document.getElementById("total-price").textContent = `Total Price: $${totalPrice.toFixed(2)}`;
+          })
+          .catch((error) => {
+            console.error("Error fetching flight details:", error);
+            const li = document.createElement("li");
+            li.textContent = `Failed to load details for Flight ID: ${flightId}`;
+            flightList.appendChild(li);
+          });
+      });
     }
 
-    // Display total price
-    document.getElementById("total-price").textContent = `Total Price: $${totalPrice.toFixed(2)}`;
-
-    // Show the passenger details form
-    document.getElementById("passenger-details-form").classList.remove("hidden");
-    document.getElementById("passenger-details-form").style.display = "block";
-
   } else {
-    // If no flights are selected, make sure the section is hidden
+    // If no flights are selected, hide the section
     selectedFlightsSection.classList.add("hidden");
     selectedFlightsSection.style.display = "none";
   }
-
+  //---------------------------------------------------------------------------------------------------
   // Book the flight and display booking information
-  document.getElementById("book-flight-btn").addEventListener("click", async () => {
+  document.getElementById("book-flight-btn").addEventListener("click", () => {
+    
     const bookingNumber = `BOOK-${Date.now()}`;
     const bookedFlightInfo = document.getElementById("booked-flight-info");
     const passengerInfoList = document.getElementById("passenger-info-list");
@@ -149,178 +154,183 @@ document.addEventListener("DOMContentLoaded", async function () {
       passengers: [],
     };
 
-    const flightPromises = [];
-
     // Process departure flights for booking
-    if (selectedFlights.departure && selectedFlights.departure.length > 0) {
-      for (let index = 0; index < selectedFlights.departure.length; index++) {
-        const data = selectedFlights.departure[index];
-        const { flightId, adults, children, infants } = data;
+    const departurePromises = selectedFlights.departure ? selectedFlights.departure.map((data, index) => {
+      const { flightId, adults, children, infants } = data;
 
-        const promise = fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`)
-          .then((response) => response.json())
-          .then((flight) => {
-            // Create and populate list item with flight details for confirmation
-            const flightLi = document.createElement("li");
-            flightLi.innerHTML = `
-              <p>Departure Flight:</p>
-              <p>Flight ID: ${flight.flight_id}</p>
-              <p>Origin: ${flight.origin}</p>
-              <p>Destination: ${flight.destination}</p>
-              <p>Departure Date: ${flight.departure_date}</p>
-              <p>Departure Time: ${flight.departure_time}</p>
-              <p>Arrival Date: ${flight.arrival_date}</p>
-              <p>Arrival Time: ${flight.arrival_time}</p>
-              <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
-            `;
-            bookedFlightInfo.appendChild(flightLi);
 
-            // Add flight details to bookingDetails.flights
-            bookingDetails.flights.push({
-              flightId: flight.flight_id,
-              origin: flight.origin,
-              destination: flight.destination,
-              departureDate: flight.departure_date,
-              departureTime: flight.departure_time,
-              arrivalDate: flight.arrival_date,
-              arrivalTime: flight.arrival_time,
-              adults: adults,
-              children: children,
-              infants: infants,
-            });
+      console.log("LOOKING FOR ERRORS");
+      console.log(flightId);
+      // <p>Return Flight:</p>
+      // <p>Flight ID: ${flight["flight-id"][0]}</p>
+      // <p>Origin: ${flight["origin"][0]}</p>
+      // <p>Destination: ${flight["destination"][0]}</p>
+      // <p>Departure Date: ${flight["departure-date"][0]}</p>
+      // <p>Departure Time: ${flight["departure-time"][0]}</p>
+      // <p>Arrival Date: ${flight["arrival-date"][0]}</p>
+      // <p>Arrival Time: ${flight["arrival-time"][0]}</p>
 
-            // Update flight seats
-            return fetch("http://localhost:3000/update-flight-seats", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                flightId: flightId,
-                seatsToBook: adults + children + infants, // Total seats to book
-              }),
-            });
-          })
-          .then((response) => response && response.json())
-          .then((data) => {
-            if (data) {
-              console.log(`Seats booked for Flight ID ${data.flightId}:`, data.message);
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching flight details or updating seats:", error);
+
+
+      return fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`)
+        .then((response) => response.json())
+        .then((flight) => {
+          // Create and populate list item with departure flight details
+          const flightLi = document.createElement("li");
+          flightLi.innerHTML = `
+            <p>Departure Flight:</p>
+            <p>Flight ID: ${flight["flight-id"][0]}</p>
+            <p>Origin: ${flight["origin"][0]}</p>
+            <p>Destination: ${flight["destination"][0]}</p>
+            <p>Departure Date: ${flight["departure-date"][0]}</p>
+            <p>Departure Time: ${flight["departure-time"][0]}</p>
+            <p>Arrival Date: ${flight["arrival-date"][0]}</p>
+            <p>Arrival Time: ${flight["arrival-time"][0]}</p>
+            <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
+          `;
+          bookedFlightInfo.appendChild(flightLi);
+
+          // Collect flight details
+          bookingDetails.flights.push({
+            flightId: flight["flight-id"][0],
+            origin: flight["origin"][0],
+            destination: flight["destination"][0],
+            departureDate: flight["departure-date"][0],
+            departureTime: flight["departure-time"][0],
+            arrivalDate: flight["arrival-date"][0],
+            arrivalTime: flight["arrival-time"][0],
+            adults: adults,
+            children: children,
+            infants: infants,
           });
 
-        flightPromises.push(promise);
-      }
-    }
+          // Update flight seats
+          return fetch("http://localhost:3000/update-flight-seats", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              flightId: flightId,
+              seatsToBook: adults + children + infants,
+            }),
+          });
+        })
+        .then((response) => response && response.json())
+        .then((data) => {
+          if (data) {
+            console.log(`Seats booked for Flight ID ${data.flightId}:`, data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching flight details or updating seats:", error);
+        });
+    }) : [];
 
     // Process return flights for booking if they exist
-    if (selectedFlights.return && selectedFlights.return.length > 0) {
-      for (let index = 0; index < selectedFlights.return.length; index++) {
-        const data = selectedFlights.return[index];
-        const { flightId, adults, children, infants } = data;
+    const returnPromises = (selectedFlights.return && selectedFlights.return.length > 0) ? selectedFlights.return.map((data, index) => {
+      const { flightId, adults, children, infants } = data;
+      return fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`)
+        .then((response) => response.json())
+        .then((flight) => {
+          // Create and populate list item with return flight details
+          const flightLi = document.createElement("li");
+          flightLi.innerHTML = `
+            <p>Return Flight:</p>
+            <p>Flight ID: ${flight["flight-id"][0]}</p>
+            <p>Origin: ${flight["origin"][0]}</p>
+            <p>Destination: ${flight["destination"][0]}</p>
+            <p>Departure Date: ${flight["departure-date"][0]}</p>
+            <p>Departure Time: ${flight["departure-time"][0]}</p>
+            <p>Arrival Date: ${flight["arrival-date"][0]}</p>
+            <p>Arrival Time: ${flight["arrival-time"][0]}</p>
+            <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
+          `;
+          bookedFlightInfo.appendChild(flightLi);
 
-        const promise = fetch(`http://localhost:3000/get-flight-details?flightId=${flightId}`)
-          .then((response) => response.json())
-          .then((flight) => {
-            // Create and populate list item with flight details for confirmation
-            const flightLi = document.createElement("li");
-            flightLi.innerHTML = `
-              <p>Return Flight:</p>
-              <p>Flight ID: ${flight.flight_id}</p>
-              <p>Origin: ${flight.origin}</p>
-              <p>Destination: ${flight.destination}</p>
-              <p>Departure Date: ${flight.departure_date}</p>
-              <p>Departure Time: ${flight.departure_time}</p>
-              <p>Arrival Date: ${flight.arrival_date}</p>
-              <p>Arrival Time: ${flight.arrival_time}</p>
-              <p>Adults: ${adults}, Children: ${children}, Infants: ${infants}</p>
-            `;
-            bookedFlightInfo.appendChild(flightLi);
-
-            // Add return flight details to bookingDetails.flights
-            bookingDetails.flights.push({
-              flightId: flight.flight_id,
-              origin: flight.origin,
-              destination: flight.destination,
-              departureDate: flight.departure_date,
-              departureTime: flight.departure_time,
-              arrivalDate: flight.arrival_date,
-              arrivalTime: flight.arrival_time,
-              adults: adults,
-              children: children,
-              infants: infants,
-            });
-
-            // Update flight seats
-            return fetch("http://localhost:3000/update-flight-seats", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                flightId: flightId,
-                seatsToBook: adults + children + infants,
-              }),
-            });
-          })
-          .then((response) => response && response.json())
-          .then((data) => {
-            if (data) {
-              console.log(`Seats booked for Flight ID ${data.flightId}:`, data.message);
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching flight details or updating seats:", error);
+          // Collect return flight details
+          bookingDetails.flights.push({
+            flightId: flight["flight-id"][0],
+            origin: flight["origin"][0],
+            destination: flight["destination"][0],
+            departureDate: flight["departure-date"][0],
+            departureTime: flight["departure-time"][0],
+            arrivalDate: flight["arrival-date"][0],
+            arrivalTime: flight["arrival-time"][0],
+            adults: adults,
+            children: children,
+            infants: infants,
           });
 
-        flightPromises.push(promise);
+          // Update flight seats
+          return fetch("http://localhost:3000/update-flight-seats", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              flightId: flightId,
+              seatsToBook: adults + children + infants,
+            }),
+          });
+        })
+        .then((response) => response && response.json())
+        .then((data) => {
+          if (data) {
+            console.log(`Seats booked for Flight ID ${data.flightId}:`, data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching flight details or updating seats:", error);
+        });
+    }) : [];
+
+    // Once all flight updates are done, collect passengers
+    Promise.all([...departurePromises, ...returnPromises]).then(() => {
+      // Collect and display passenger information
+      if (selectedFlights.departure && selectedFlights.departure.length > 0) {
+        selectedFlights.departure.forEach((data, index) => {
+          for (let i = 0; i < data.adults + data.children + data.infants; i++) {
+            const firstName = document.getElementById(`first-name-${index}-${i}`).value;
+            const lastName = document.getElementById(`last-name-${index}-${i}`).value;
+            const dob = document.getElementById(`dob-${index}-${i}`).value;
+            const ssn = document.getElementById(`ssn-${index}-${i}`).value;
+
+            const passengerLi = document.createElement("li");
+            passengerLi.textContent = `SSN: ${ssn}, Name: ${firstName} ${lastName}, DOB: ${dob}`;
+            passengerInfoList.appendChild(passengerLi);
+
+            // Add passenger details to bookingDetails
+            bookingDetails.passengers.push({ firstName, lastName, dob, ssn });
+
+
+            console.log("TEST BOOKING DETAILS")
+            console.log(bookingDetails);
+
+
+          }
+        });
       }
-    }
 
-    // Wait for all flight-related promises to complete
-    await Promise.all(flightPromises);
+      // Show booking details
+      document.getElementById("booking-details").style.display = "block";
 
-    // Collect and display passenger information AFTER all flights have been processed
-    // (This ensures we have correct indexing and the final bookingDetails ready)
-    if (selectedFlights.departure && selectedFlights.departure.length > 0) {
-      for (let index = 0; index < selectedFlights.departure.length; index++) {
-        const data = selectedFlights.departure[index];
-        for (let i = 0; i < data.adults + data.children + data.infants; i++) {
-          const firstName = document.getElementById(`first-name-${index}-${i}`).value;
-          const lastName = document.getElementById(`last-name-${index}-${i}`).value;
-          const dob = document.getElementById(`dob-${index}-${i}`).value;
-          const ssn = document.getElementById(`ssn-${index}-${i}`).value;
-
-          const passengerLi = document.createElement("li");
-          passengerLi.textContent = `SSN: ${ssn}, Name: ${firstName} ${lastName}, DOB: ${dob}`;
-          document.getElementById("passenger-info-list").appendChild(passengerLi);
-
-          // Add passenger details to bookingDetails
-          bookingDetails.passengers.push({ firstName, lastName, dob, ssn });
-        }
-      }
-    }
-
-    // Now that all flights and passengers are collected, send booking details to the server
-    fetch("http://localhost:3000/save-flight-booking", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bookingDetails),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.message); // Log success message
+      // Send booking details to server
+      fetch("http://localhost:3000/save-flight-booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingDetails),
       })
-      .catch((error) => {
-        console.error("Error saving booking:", error);
-      });
-
-    // Show booking details
-    document.getElementById("booking-details").style.display = "block";
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data.message); // Log success message
+        })
+        .catch((error) => {
+          console.error("Error saving booking:", error);
+        });
+    });
   });
 });
 
@@ -621,9 +631,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 //         const firstName = document.getElementById(
 //           `first-name-${index}-${i}`
 //         ).value;
-//         const lastName = document.getElementById(
-//           `last-name-${index}-${i}`
-//         ).value;
+//         const lastName = document.getElementById(`last-name-${index}-${i}`).value;
 //         const dob = document.getElementById(`dob-${index}-${i}`).value;
 //         const ssn = document.getElementById(`ssn-${index}-${i}`).value;
 
@@ -640,7 +648,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 //     document.getElementById("booking-details").style.display = "block";
 
 //     // Send booking details to server
-//     fetch("http://localhost:3000/save-booking", {
+//     fetch("http://localhost:3000/save-flight-booking", {
 //       method: "POST",
 //       headers: {
 //         "Content-Type": "application/json",
@@ -655,6 +663,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 //         console.error("Error saving booking:", error);
 //       });
 //   });
+
 // });
 
 //----------------Hotel Bookings---------------
@@ -666,63 +675,81 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Display selected hotel details if cart data exists
   if (cartData) {
-    selectedHotelDiv.classList.remove("hidden");
-    hotelDetailsList.innerHTML = `
+      selectedHotelDiv.classList.remove("hidden");
+      hotelDetailsList.innerHTML = `
           <li><strong>Hotel ID:</strong> ${cartData.hotel_id}</li>
           <li><strong>Hotel Name:</strong> ${cartData.hotel_name}</li>
           <li><strong>City:</strong> ${cartData.city}</li>
-          <li><strong>Check-in Date:</strong> ${new Date(
-            cartData.checkin_date
-          ).toDateString()}</li>
-          <li><strong>Check-out Date:</strong> ${new Date(
-            cartData.checkout_date
-          ).toDateString()}</li>
+          <li><strong>Check-in Date:</strong> ${new Date(cartData.checkin_date).toDateString()}</li>
+          <li><strong>Check-out Date:</strong> ${new Date(cartData.checkout_date).toDateString()}</li>
           <li><strong>Adults:</strong> ${cartData.guests.adults}</li>
           <li><strong>Children:</strong> ${cartData.guests.children}</li>
           <li><strong>Infants:</strong> ${cartData.guests.infants}</li>
           <li><strong>Number of Rooms:</strong> ${cartData.rooms}</li>
-          <li><strong>Price per Night:</strong> $${
-            cartData.price_per_night
-          }</li>
-          <li><strong>Total Price:</strong> $${cartData.total_price.toFixed(
-            2
-          )}</li>
+          <li><strong>Price per Night:</strong> $${cartData.price_per_night}</li>
+          <li><strong>Total Price:</strong> $${cartData.total_price.toFixed(2)}</li>
       `;
   } else {
-    selectedHotelDiv.innerHTML = "<p>No hotel selected in the cart.</p>";
+      selectedHotelDiv.innerHTML = "<p>No hotel selected in the cart.</p>";
   }
 
   // Book hotel
-  document
-    .getElementById("book-hotel-btn")
-    .addEventListener("click", async function () {
-      if (!cartData) {
+  document.getElementById("book-hotel-btn").addEventListener("click", async function () {
+    if (!cartData) {
         alert("No hotel selected to book.");
         return;
-      }
+    }
 
-      try {
-        // Send booking details to save in the database
-        const bookingResponse = await fetch(
-          "http://localhost:3000/save-hotel-booking",
-          {
+    try {
+        // Send booking details to save in XML
+        const bookingResponse = await fetch("http://localhost:3000/save-hotel-booking", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(cartData),
-          }
-        );
-      } catch (error) {
+            body: JSON.stringify(cartData)
+        });
+
+        if (bookingResponse.ok) {
+            alert("Hotel booking confirmed!");
+            
+            // Update available rooms in hotels.json
+            try {
+                const updateResponse = await fetch("http://localhost:3000/update-hotel-rooms", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ hotel_id: cartData.hotel_id, rooms_booked: cartData.rooms })
+                });
+
+                // Log status and response body for debugging
+                console.log("Update Response Status:", updateResponse.status);
+                const updateResponseBody = await updateResponse.json();
+                console.log("Update Response Body:", updateResponseBody);
+
+                if (!updateResponse.ok) {
+                    console.error("Failed to update hotel rooms.");
+                }
+            } catch (updateError) {
+                console.error("Error updating hotel rooms:", updateError);
+            }
+
+            // Clear cart data after successful booking
+            localStorage.removeItem("cartItem");
+        } else {
+            alert("Booking failed. Please try again.");
+        }
+    } catch (error) {
         console.error("Error while booking the hotel:", error);
         alert("An error occurred while confirming the booking.");
-      }
-    });
+    }
+  });
+
 
   // Clear cart
-  document
-    .getElementById("clearHotelCart")
-    .addEventListener("click", function () {
+  document.getElementById("clearHotelCart").addEventListener("click", function () {
       localStorage.removeItem("cartItem");
       selectedHotelDiv.innerHTML = "<p>Hotel cart cleared.</p>";
       selectedHotelDiv.classList.add("hidden");
-    });
+  });
+
+  
 });
+

@@ -238,9 +238,6 @@ document.addEventListener("DOMContentLoaded", function () {
             // Remove any existing flight of the same type (only one flight per direction)
             selectedFlights[flightType] = [];
 
-            console.log("MSKLDCMKSCMSDM");
-            console.log(flightId);
-
             // Add new flight to selection
             selectedFlights[flightType].push({
               flightId,
@@ -258,6 +255,9 @@ document.addEventListener("DOMContentLoaded", function () {
               }
             });
           }
+
+          console.log("SELECTED FLIGHTS FLIGHT.JS");
+          console.log(selectedFlights);
 
           localStorage.setItem("selectedFlights", JSON.stringify(selectedFlights));
         });

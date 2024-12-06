@@ -196,6 +196,8 @@ app.get("/get-flight-details", (req, res) => {
       available_seats: row.available_seats,
       price: row.price
     };
+    console.log("LALALAL");
+    console.log(flightData);
 
     db.close();
     return res.json(flightData);
@@ -269,6 +271,10 @@ function assignPassengerCategories(passengers, adultsCount, childrenCount, infan
 
 app.post("/save-flight-booking", async (req, res) => {
   const bookingDetails = req.body;
+
+  console.log("SERVER TEST BOOKING DETAILS")
+  console.log(bookingDetails);
+
   const { flights, passengers } = bookingDetails;
 
   if (!flights || !Array.isArray(flights) || flights.length === 0) {
