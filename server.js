@@ -247,6 +247,90 @@ app.post("/book-flight", (req, res) => {
   });
 });
 
+app.post("/save-booking", (req, res) => {
+  const { bookingNumber, flights, passengers } = req.body;
+
+  if (!flights || flights.length === 0 || !passengers || passengers.length === 0) {
+    return res.status(400).json({ message: "Invalid booking details." });
+  }
+
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.serialize(() => {
+    // Insert into flight_booking table
+    const insertBookingQuery = `
+      INSERT INTO flight_booking (flight_id, total_price)
+      VALUES (?, ?)
+    `;
+
+    flights.forEach((flight) => {
+      const { flightId, adults, children, infants } = flight;
+      const totalSeats = adults + children + infants;
+      const totalPrice = flight.adults * flight.price +
+                         flight.children * (flight.price * 0.7) +
+                         flight.infants * (flight.price * 0.1);
+
+      db.run(insertBookingQuery, [flightId, totalPrice], function (err) {
+        if (err) {
+          console.error("Error inserting into flight_booking:", err.message);
+          return res.status(500).json({ message: "Error saving booking." });
+        }
+
+        const flightBookingId = this.lastID; // Get the inserted flight_booking_id
+
+        // Insert passengers and tickets
+        const insertPassengerQuery = `
+          INSERT INTO passenger (ssn, first_name, last_name, dob, category)
+          VALUES (?, ?, ?, ?, ?)
+        `;
+
+        const insertTicketQuery = `
+          INSERT INTO tickets (flight_booking_id, ssn, price)
+          VALUES (?, ?, ?)
+        `;
+
+        passengers.forEach((passenger) => {
+          const { ssn, firstName, lastName, dob } = passenger;
+
+          // Determine the category based on passenger's age
+          const age = new Date().getFullYear() - new Date(dob).getFullYear();
+          const category = age < 2 ? "Infant" : age < 12 ? "Child" : "Adult";
+
+          // Insert passenger
+          db.run(insertPassengerQuery, [ssn, firstName, lastName, dob, category], (err) => {
+            if (err) {
+              console.error("Error inserting passenger:", err.message);
+              // Skip duplicate passenger (already exists)
+            } else {
+              // Insert ticket
+              const ticketPrice =
+                category === "Infant"
+                  ? flight.price * 0.1
+                  : category === "Child"
+                  ? flight.price * 0.7
+                  : flight.price;
+
+              db.run(insertTicketQuery, [flightBookingId, ssn, ticketPrice], (err) => {
+                if (err) {
+                  console.error("Error inserting ticket:", err.message);
+                }
+              });
+            }
+          });
+        });
+      });
+    });
+
+    res.json({ message: "Booking and tickets saved successfully!" });
+  });
+
+  db.close((err) => {
+    if (err) {
+      console.error("Error closing the database:", err.message);
+    }
+  });
+});
+
 
 //---------For hotel booking---------
 // Handle booking information submission
