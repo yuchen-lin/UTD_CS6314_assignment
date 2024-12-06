@@ -82,7 +82,7 @@ app.post("/create-xml", (req, res) => {
   });
 });
 
-// ----------FOR FLIGHTS -----------
+// -------------------------------FOR FLIGHTS ----------------------------------------
 
 //Search flights for flights page
 app.post("/search-flights", (req, res) => {
@@ -160,6 +160,8 @@ app.post("/search-flights", (req, res) => {
 
 // To get the fight data SQL
 app.get("/get-flight-details", (req, res) => {
+  console.log("GETTING FLIGHT DATA (IN SERVER.JS)");
+
   const flightId = req.query.flightId;
   if (!flightId) {
     return res.status(400).json({ message: "Flight ID is required" });
@@ -196,7 +198,8 @@ app.get("/get-flight-details", (req, res) => {
       available_seats: row.available_seats,
       price: row.price
     };
-    console.log("LALALAL");
+
+    console.log("RETURNING FLIGHT DATA: (IN SERVER.JS)");
     console.log(flightData);
 
     db.close();
@@ -205,7 +208,7 @@ app.get("/get-flight-details", (req, res) => {
 });
 
 
-// ------------------------ Handle flight booking information submission --------------------------------
+// ------------------------------------- FOR FLIGHT BOOKING  --------------------------------
 
 app.use(express.json());
 
@@ -271,10 +274,6 @@ function assignPassengerCategories(passengers, adultsCount, childrenCount, infan
 
 app.post("/save-flight-booking", async (req, res) => {
   const bookingDetails = req.body;
-
-  console.log("SERVER TEST BOOKING DETAILS")
-  console.log(bookingDetails);
-
   const { flights, passengers } = bookingDetails;
 
   if (!flights || !Array.isArray(flights) || flights.length === 0) {
@@ -285,20 +284,17 @@ app.post("/save-flight-booking", async (req, res) => {
     return res.status(400).json({ message: "No passengers provided in booking." });
   }
 
-  // Open a new database connection here, like in save-hotel-booking
-  const db = new sqlite3.Database("./data/app.db", sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+  const db = new sqlite3.Database("./data/app.db", sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
-      console.error("Could not open database:", err.message);
+      console.error("Error opening database:", err.message);
       return res.status(500).json({ message: "Internal server error" });
     }
   });
 
   try {
-    // Process each flight
     for (let flightData of flights) {
       const { flightId, adults, children, infants } = flightData;
 
-      // Get flight details
       const flightRow = await new Promise((resolve, reject) => {
         db.get("SELECT * FROM flights WHERE flight_id = ?", [flightId], (err, row) => {
           if (err) return reject(err);
@@ -307,12 +303,35 @@ app.post("/save-flight-booking", async (req, res) => {
         });
       });
 
+      const totalPassengers = adults + children + infants;
+      const availableSeats = flightRow.available_seats;
+
+      if (availableSeats < totalPassengers) {
+        throw new Error(`Not enough seats available for Flight ID: ${flightId}`);
+      }
+
       const { adultPrice, childPrice, infantPrice, totalFlightPrice } = computeCategoryPrices(
         flightRow.price,
         adults,
         children,
         infants
       );
+
+      console.log("UPDATING SEATS IN FLIGHT (SERVER.JS)");
+      console.log(availableSeats);
+      console.log(totalPassengers);
+
+      // Update available seats
+      await new Promise((resolve, reject) => {
+        db.run(
+          "UPDATE flights SET available_seats = available_seats - ? WHERE flight_id = ?",
+          [totalPassengers, flightId],
+          function (updateErr) {
+            if (updateErr) return reject(updateErr);
+            resolve();
+          }
+        );
+      });
 
       // Insert into flight_booking
       const flightBookingId = await new Promise((resolve, reject) => {
@@ -355,91 +374,24 @@ app.post("/save-flight-booking", async (req, res) => {
       }
     }
 
-    // Close the database after all operations succeed
     db.close((closeErr) => {
       if (closeErr) {
         console.error("Error closing database:", closeErr.message);
         return res.status(500).json({ message: "Error finalizing booking." });
       }
-
-      // If we reach here, everything was successful
-      res.json({ message: "Booking saved successfully." });
+      return res.status(200).json({ message: "Booking saved successfully." });
     });
 
   } catch (error) {
-    console.error("Error saving booking:", error);
-    // Attempt to close the DB even on error
+    console.error("Error saving booking:", error.message);
     db.close((closeErr) => {
       if (closeErr) {
         console.error("Error closing database after error:", closeErr.message);
       }
-      res.status(500).json({ message: "Error saving booking." });
+      res.status(500).json({ message: "An unexpected error occurred." });
     });
   }
 });
-
-// app.listen(3000, () => {
-//   console.log("Server listening on port 3000");
-// });
-
-
-// ------------------------ END OF Handle flight booking information submission --------------------------------
-
-// app.listen(port, () => {
-//   console.log(`Server is running on http://localhost:${port}`);
-// });
-
-// // Upate flight seats
-// app.post("/update-flight-seats", (req, res) => {
-//   const { flightId, seatsToBook } = req.body; // Expecting flightId and seatsToBook in the request body
-//   const filePath = path.join(dataDirectory, "flights_availableSeats.xml"); // Path to the flights_availableSeats.xml file
-
-//   // Read the existing XML file
-//   fs.readFile(filePath, "utf8", (err, data) => {
-//     if (err && err.code === "ENOENT") {
-//       // If the file does not exist
-//       return res.status(404).json({ message: "XML file not found." });
-//     } else if (err) {
-//       console.error("Error reading XML file:", err);
-//       return res.status(500).json({ message: "Error reading XML file" });
-//     }
-
-//     // Parse the XML data
-//     xml2js.parseString(data, (parseErr, result) => {
-//       if (parseErr) {
-//         console.error("Error parsing XML file:", parseErr);
-//         return res.status(500).json({ message: "Error parsing XML file" });
-//       }
-
-//       // Find the flight by flightId
-//       const flight = result.flights.flight.find((f) => f["flight-id"][0] === flightId);
-//       if (flight) {
-//         const availableSeats = parseInt(flight["available-seats"][0]);
-//         if (availableSeats >= seatsToBook) {
-//           // Update available seats
-//           flight["available-seats"][0] = (availableSeats - seatsToBook).toString();
-
-//           // Rebuild the XML and write it back to the file
-//           const builder = new xml2js.Builder();
-//           const xml = builder.buildObject(result);
-
-//           fs.writeFile(filePath, xml, (writeErr) => {
-//             if (writeErr) {
-//               console.error("Error writing XML file:", writeErr);
-//               return res.status(500).json({ message: "Error updating XML file" });
-//             }
-
-//             return res.json({ message: "Available seats updated successfully!" });
-//           });
-//         } else {
-//           return res.status(400).json({ message: "Not enough seats available." });
-//         }
-//       } else {
-//         return res.status(404).json({ message: "Flight not found." });
-//       }
-//     });
-//   });
-// });
 
 
 //---------For hotel booking---------
