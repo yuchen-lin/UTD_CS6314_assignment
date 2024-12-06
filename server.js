@@ -966,3 +966,367 @@ app.get("/hotels", (req, res) => {
     }
   });
 });
+
+// Retrieve booking information by ID
+app.get("/hotel-booking-info", (req, res) => {
+  const { id } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.get(
+    `SELECT * FROM hotel_booking WHERE hotel_booking_id = ?`,
+    [id],
+    (err, row) => {
+      if (err) {
+        console.error("Error fetching booking info:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(row || { message: "No booking found with the given ID." });
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve flight booking information by ID
+app.get("/flight-booking-info", (req, res) => {
+  const { id } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.get(
+    `SELECT * FROM flight_booking WHERE flight_booking_id = ?`,
+    [id],
+    (err, row) => {
+      if (err) {
+        console.error("Error fetching flight booking info:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(row || { message: "No flight booking found with the given ID." });
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve passengers for a specific flight booking
+app.get("/flight-passengers", (req, res) => {
+  const { flight_booking_id } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `SELECT p.* FROM passenger p
+     JOIN tickets t ON p.ssn = t.ssn
+     WHERE t.flight_booking_id = ?`,
+    [flight_booking_id],
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching passengers:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve flights for a specific person using SSN
+app.get("/flights-by-ssn", (req, res) => {
+  const { ssn } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `SELECT f.* FROM flight_booking f
+     JOIN tickets t ON f.flight_booking_id = t.flight_booking_id
+     WHERE t.ssn = ?`,
+    [ssn],
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching flights for person:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve hotel bookings for Sep 2024
+app.get("/hotel-bookings-by-date", (req, res) => {
+  const { month, year } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `SELECT * FROM hotel_booking WHERE strftime('%m', check_in_date) = ? AND strftime('%Y', check_in_date) = ?`,
+    [month, year],
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching hotel bookings by date:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve flight bookings for Sep 2024
+app.get("/flight-bookings-by-date", (req, res) => {
+  const { month, year } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `SELECT * FROM flights WHERE strftime('%m', departure_date) = ? AND strftime('%Y', departure_date) = ?`,
+    [month, year],
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching flight bookings by date:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+//--------------------------------------------------------------------------
+//--------------------------------admin section-----------------------------
+//--------------------------------------------------------------------------
+
+// Retrieve flights departing from a city in Texas from Sep 2024 to Oct 2024
+app.get("/flights-from-texas", (req, res) => {
+  const { city } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `SELECT * FROM flights
+     WHERE LOWER(origin) = LOWER(?) 
+     AND departure_date BETWEEN '2024-09-01' AND '2024-10-31'`,
+    [city],
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching flights from Texas:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve hotel bookings in a city in Texas from Sep 2024 to Oct 2024
+app.get("/hotels-in-texas", (req, res) => {
+  const { city } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `
+    SELECT hb.*, h.city
+    FROM hotel_booking hb
+    JOIN hotel h ON hb.hotel_id = h.hotel_id
+    WHERE LOWER(h.city) = LOWER(?)
+    AND hb.check_in_date BETWEEN '2024-09-01' AND '2024-10-31'
+    `,
+    [city],
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching hotels in Texas:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve the most expensive booked hotels
+app.get("/most-expensive-hotels", (req, res) => {
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.get(
+    `SELECT * FROM hotel_booking
+     ORDER BY total_price DESC
+     LIMIT 1`,
+    (err, row) => {
+      if (err) {
+        console.error("Error fetching most expensive hotels:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(row || { message: "No hotel bookings found." });
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve flights with an infant passenger
+app.get("/flights-with-infant", (req, res) => {
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `SELECT DISTINCT f.* FROM flights f
+     JOIN tickets t ON f.flight_id = t.flight_booking_id
+     JOIN passenger p ON t.ssn = p.ssn
+     WHERE LOWER(p.category) = 'infant'`,
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching flights with infant passengers:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve flights with an infant passenger and at least 5 children
+app.get("/flights-with-infant-and-children", (req, res) => {
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `SELECT DISTINCT f.* FROM flights f
+     JOIN tickets t ON f.flight_id = t.flight_booking_id
+     JOIN passenger p ON t.ssn = p.ssn
+     WHERE LOWER(p.category) = 'infant'
+     AND (SELECT COUNT(*) FROM passenger WHERE LOWER(category) = 'child' AND passenger.ssn = t.ssn) >= 5`,
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching flights with infant and 5+ children:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve the most expensive booked flights
+app.get("/most-expensive-flights", (req, res) => {
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.get(
+    `SELECT * FROM flights
+     ORDER BY price DESC
+     LIMIT 1`,
+    (err, row) => {
+      if (err) {
+        console.error("Error fetching most expensive flights:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(row || { message: "No flight bookings found." });
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve flights departing from a Texas city with no infant passengers
+app.get("/flights-from-texas-no-infants", (req, res) => {
+  const { city } = req.query;
+  const db = new sqlite3.Database("./data/app.db");
+
+  db.all(
+    `SELECT DISTINCT f.* FROM flights f
+     LEFT JOIN tickets t ON f.flight_id = t.flight_id
+     LEFT JOIN passenger p ON t.ssn = p.ssn
+     WHERE LOWER(f.origin) = LOWER(?) 
+     AND (p.category IS NULL OR LOWER(p.category) != 'infant')`,
+    [city],
+    (err, rows) => {
+      if (err) {
+        console.error("Error fetching flights from Texas without infants:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(rows);
+      }
+    }
+  );
+
+  db.close();
+});
+
+// Retrieve the number of flights arriving in California in Sep-Oct 2024
+app.get("/flights-to-california", (req, res) => {
+  const db = new sqlite3.Database("./data/app.db");
+  const californiaCities = [
+    "los angeles",
+    "san francisco",
+    "san diego",
+    "sacramento",
+    "san jose",
+    "fresno",
+    "oakland",
+    "long beach",
+    "bakersfield",
+    "anaheim",
+    "riverside",
+    "stockton",
+    "irvine",
+    "chula vista",
+    "fremont",
+    "san bernardino",
+    "modesto",
+    "fontana",
+    "santa ana",
+    "glendale",
+    "huntington beach",
+    "moreno valley",
+    "oceanside",
+    "elk grove",
+    "garden grove",
+    "rancho cucamonga",
+    "santa clarita",
+    "ontario",
+    "salinas",
+    "hayward",
+    "visalia",
+    "palmdale",
+    "pasadena",
+    "escondido",
+    "torrance",
+    "orange",
+    "fullerton",
+    "roseville",
+    "corona",
+    "concord",
+    "thousand oaks",
+    "simi valley",
+    "santa rosa"
+  ];
+
+  const placeholders = californiaCities.map(() => "?").join(", ");
+
+  db.get(
+    `SELECT COUNT(*) AS flight_count FROM flights
+     WHERE LOWER(destination) IN (${placeholders})
+     AND departure_date BETWEEN '2024-09-01' AND '2024-10-31'`,
+    (err, row) => {
+      if (err) {
+        console.error("Error fetching flights to California:", err.message);
+        res.status(500).json({ error: "Internal server error" });
+      } else {
+        res.json(row || { message: "No flights found." });
+      }
+    }
+  );
+
+  db.close();
+});

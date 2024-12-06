@@ -41,6 +41,31 @@
       </section>
       <section class="right-section">
         <h2>My Account</h2>
+        <div id="user-section">
+          <h3>Retrieve Information</h3>
+          <label for="booking-id">Enter Hotel/Flight Booking ID:</label>
+          <input type="text" id="booking-id" placeholder="Enter Booking ID">
+          <button id="retrieve-booking-btn">Retrieve Booking Info</button>
+          <p id="booking-info-status"></p>
+      
+          <br>
+          <label for="flight-booking-id">Enter Flight Booking ID:</label>
+          <input type="text" id="flight-booking-id" placeholder="Enter Flight Booking ID">
+          <button id="retrieve-passengers-btn">Retrieve Passengers Info</button>
+          <p id="passenger-info-status"></p>
+      
+          <br>
+          <label for="ssn">Enter SSN:</label>
+          <input type="text" id="ssn" placeholder="Enter SSN">
+          <button id="retrieve-person-flights-btn">Retrieve Flights by SSN</button>
+          <p id="person-flights-status"></p>
+      
+          <br>
+          <button id="retrieve-sep-bookings-btn">Retrieve All SEP 2024 Bookings</button>
+          <p id="sep-bookings-status"></p>
+        </div>
+        <br>
+
         <div id="admin-section" style="display: none;">
           <h3>Admin Panel</h3>
           <button id="upload-xml-btn">Upload Flights XML</button>
@@ -50,6 +75,52 @@
           <button id="upload-json-btn">Upload Hotels JSON</button>
           <input type="file" id="json-input" accept=".json" style="display: none;">
           <p id="json-upload-status" style="color: green;"></p>
+          <br>
+
+          <h4>Retrieve Flights from a Texas City (Sep-Oct 2024)</h4>
+          <label for="tx-departure-city">Departure City (Texas):</label>
+          <input type="text" id="tx-departure-city" placeholder="Enter city name">
+          <button id="retrieve-flights-texas-btn">Retrieve Flights</button>
+          <pre id="flights-texas-status"></pre>
+          <br>
+
+          <h4>Retrieve Hotels in a Texas City (Sep-Oct 2024)</h4>
+          <label for="tx-hotel-city">Hotel City (Texas):</label>
+          <input type="text" id="tx-hotel-city" placeholder="Enter city name">
+          <button id="retrieve-hotels-texas-btn">Retrieve Hotels</button>
+          <pre id="hotels-texas-status"></pre>
+          <br>
+
+          <h4>Retrieve Most Expensive Booked Hotels</h4>
+          <button id="retrieve-most-expensive-hotels-btn">Retrieve Most Expensive Hotels</button>
+          <pre id="most-expensive-hotels-status"></pre>
+          <br>
+
+          <h4>Retrieve Flights with an Infant Passenger</h4>
+          <button id="retrieve-flights-infant-btn">Retrieve Flights</button>
+          <pre id="flights-infant-status"></pre>
+          <br>
+
+          <h4>Retrieve Flights with an Infant and 5+ Children</h4>
+          <button id="retrieve-flights-infant-children-btn">Retrieve Flights</button>
+          <pre id="flights-infant-children-status"></pre>
+          <br>
+
+          <h4>Retrieve Most Expensive Booked Flights</h4>
+          <button id="retrieve-most-expensive-flights-btn">Retrieve Most Expensive Flights</button>
+          <pre id="most-expensive-flights-status"></pre>
+          <br>
+
+          <h4>Retrieve Flights from a Texas City with No Infant Passengers</h4>
+          <label for="tx-departure-no-infants">Departure City (Texas):</label>
+          <input type="text" id="tx-departure-no-infants" placeholder="Enter city name">
+          <button id="retrieve-flights-no-infants-btn">Retrieve Flights</button>
+          <pre id="flights-no-infants-status"></pre>
+          <br>
+          
+          <h4>Retrieve the Number of Flights Arriving in California (Sep-Oct 2024)</h4>
+          <button id="retrieve-flights-california-btn">Retrieve Flights</button>
+          <pre id="flights-california-status"></pre>
         </div>
       </section>
     </div>
