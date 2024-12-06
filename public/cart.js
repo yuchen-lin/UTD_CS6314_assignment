@@ -87,19 +87,19 @@ document.addEventListener("DOMContentLoaded", function () {
       flights: selectedFlights.departure.concat(selectedFlights.return || []),
       passengers: [],
     };
-
+  
     selectedFlights.departure.forEach((data, index) => {
       for (let i = 0; i < data.adults + data.children + data.infants; i++) {
         const firstName = document.getElementById(`first-name-${index}-${i}`).value;
         const lastName = document.getElementById(`last-name-${index}-${i}`).value;
         const dob = document.getElementById(`dob-${index}-${i}`).value;
         const ssn = document.getElementById(`ssn-${index}-${i}`).value;
-
+  
         bookingDetails.passengers.push({ firstName, lastName, dob, ssn });
       }
     });
-
-    fetch("http://localhost:3000/save-booking", {
+  
+    fetch("http://localhost:3000/book-flight", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(bookingDetails),
@@ -108,14 +108,14 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         alert("Booking successful!");
         console.log(data.message);
-        // Optionally clear the cart after booking
-        localStorage.clear();
+        localStorage.clear(); // Optionally clear the cart after booking
         location.reload();
       })
       .catch((error) => {
         console.error("Error saving booking:", error);
       });
   });
+  
 });
 
 
