@@ -237,6 +237,10 @@ document.addEventListener("DOMContentLoaded", function () {
           } else {
             // Remove any existing flight of the same type (only one flight per direction)
             selectedFlights[flightType] = [];
+
+            console.log("MSKLDCMKSCMSDM");
+            console.log(flightId);
+
             // Add new flight to selection
             selectedFlights[flightType].push({
               flightId,
