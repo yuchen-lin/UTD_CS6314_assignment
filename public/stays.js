@@ -6,6 +6,21 @@ document.addEventListener("DOMContentLoaded", async function () {
   const displayHotels = document.getElementById("displayHotels");
   const errorMessage = document.getElementById("errorMessage");
 
+  // Check if user exists in localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const rightSection = document.querySelector(".right-section");
+  
+  if (!user) {
+    // User is not logged in
+    rightSection.innerHTML = `
+      <h2>Please log in first.</h2>
+      <p>You must be logged in to book your stay. <a href="login.html">Log in here</a>.</p>
+    `;
+  } else {
+    // User is logged in
+    console.log("User is logged in:", user);
+  }
+
   // Initially hide the displayInfo and displayHotels sections
   displayInfo.classList.add("hidden");
   displayHotels.classList.add("hidden");

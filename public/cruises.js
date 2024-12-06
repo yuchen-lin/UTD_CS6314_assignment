@@ -13,6 +13,19 @@ $(document).ready(function () {
     const displayInfo = $("#displayInfo");
     const errorMessage = $("#errorMessage");
 
+    // Check if user exists in localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    const rightSection = $(".right-section");
+
+    if (!user) {
+        // User is not logged in
+        rightSection.html(`
+            <h2>Please log in first.</h2>
+            <p>You must be logged in to book a cruise. <a href="login.html">Log in here</a>.</p>
+        `);
+        return; // Stop further execution
+    }
+
     // Initially hide the displayInfo section
     displayInfo.addClass("hidden");
 

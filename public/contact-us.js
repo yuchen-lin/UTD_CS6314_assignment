@@ -1,4 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+  // Check if user exists in localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const rightSection = document.querySelector(".right-section");
+
+  if (!user) {
+    // User is not logged in
+    rightSection.innerHTML = `
+      <h2>Please log in first.</h2>
+      <p>You must be logged in to submit a contact form. <a href="login.html">Log in here</a>.</p>
+    `;
+    return; // Stop further execution
+  }
+
   document
     .getElementById("contactForm")
     .addEventListener("submit", function (event) {
@@ -17,9 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const nameRegex = /^[A-Z][a-zA-Z]*$/;
       const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
       const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
-  
+
       let isValid = true;
-  
+
       // Validate First Name
       if (!nameRegex.test(firstName.value.trim())) {
         firstName.classList.add("error");

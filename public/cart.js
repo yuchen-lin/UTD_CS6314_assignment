@@ -1,4 +1,18 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+  // Check if user exists in localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const mainContent = document.querySelector(".right-section"); // Assuming the main content is wrapped in a .container
+
+  if (!user) {
+    // User is not logged in
+    mainContent.innerHTML = `
+      <h2>Please log in first.</h2>
+      <p>You must be logged in to view your cart. <a href="login.html">Log in here</a>.</p>
+    `;
+    return; // Stop further execution
+  }
+
   const flightList = document.getElementById("flight-list");
   const selectedFlightsSection = document.getElementById("selected-flights");
   const selectedFlights = JSON.parse(localStorage.getItem("selectedFlights")) || [];

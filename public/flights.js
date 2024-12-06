@@ -7,6 +7,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const displayInfo = document.getElementById("displayInfo");
   const errorMessage = document.getElementById("errorMessage");
 
+  // Check if user exists in localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const rightSection = document.querySelector(".right-section");
+
+  if (!user) {
+    // User is not logged in
+    rightSection.innerHTML = `
+      <h2>Please log in first.</h2>
+      <p>You must be logged in to search for flights. <a href="login.html">Log in here</a>.</p>
+    `;
+    return; // Stop further execution
+  }
+
   // Initially hide the displayInfo section
   displayInfo.classList.add("hidden");
 

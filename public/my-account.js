@@ -9,6 +9,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const jsonInput = document.getElementById("json-input");
   const jsonUploadStatus = document.getElementById("json-upload-status");
 
+  const rightSection = document.querySelector(".right-section");
+
+  if (!user) {
+    // If the user is not logged in
+    rightSection.innerHTML = `
+      <h2>Please log in first.</h2>
+      <p>You must be logged in to access this page. <a href="login.html">Log in here</a>.</p>
+    `;
+    return; // Stop further execution
+  }
+
   // Check if the user is the admin
   if (user && user.phone === adminPhone) {
     adminSection.style.display = "block";

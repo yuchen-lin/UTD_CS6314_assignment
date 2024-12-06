@@ -3,6 +3,20 @@
 // -the type of car can be economy, SUB, compact or midsize
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    // Check if user exists in localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    const mainContent = document.querySelector(".right-section"); // Assuming main content is wrapped in .container
+
+    if (!user) {
+        // User is not logged in
+        mainContent.innerHTML = `
+          <h2>Please log in first.</h2>
+          <p>You must be logged in to book a car. <a href="login.html">Log in here</a>.</p>
+        `;
+        return; // Stop further execution
+    }
+
     const carType = document.getElementById("car-type");
     const carForm = document.getElementById("carForm");
     const displayInfo = document.getElementById("displayInfo");
