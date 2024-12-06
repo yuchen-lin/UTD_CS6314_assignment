@@ -180,98 +180,73 @@ document.addEventListener("DOMContentLoaded", function () {
         infants: infants,
       }),
     });
-    return response.json(); // Returns an array of flight objects
+    return response.json();
   }
 
-  function formatDate(dateString) {
-    // Split the input string (YYYY-MM-DD) into its components
-    const [year, month, day] = dateString.split("-");
-    
-    // Create a date object using the components (Note: month is 0-indexed)
-    const date = new Date(year, month - 1, day); 
-  
-    // Format the date as a readable string
-    return date.toDateString(); // Example: "Fri Sep 20 2024"
-  }
-  
   // Function to display flight results
   function displayFlightResults(flights, sectionTitle, flightType) {
     if (Array.isArray(flights) && flights.length > 0) {
       let flightInfoHtml = `<br><h3>${sectionTitle}:</h3>`;
       const selectedFlights = JSON.parse(localStorage.getItem("selectedFlights")) || {};
-  
+      
       if (!selectedFlights[flightType]) {
         selectedFlights[flightType] = [];
       }
-  
+
       flights.forEach((flight) => {
         const flightId = flight.flight_id;
-        const origin = flight.origin;
-        const destination = flight.destination;
-  
-        // Use the custom formatter for departure and arrival dates
-        const departureDate = formatDate(flight.departure_date);
-        const arrivalDate = formatDate(flight.arrival_date);
-  
-        const departureTime = flight.departure_time;
-        const arrivalTime = flight.arrival_time;
-        const availableSeats = flight.available_seats;
-        const price = flight.price;
-  
         const isSelected = selectedFlights[flightType].some(f => f.flightId === flightId);
-  
+        
         flightInfoHtml += `
           <br>
-          <p>Flight ID: ${flightId}</p>
-          <p>Origin: ${origin}</p>
-          <p>Destination: ${destination}</p>
-          <p>Departure Date: ${departureDate}</p>
-          <p>Departure Time: ${departureTime}</p>
-          <p>Arrival Date: ${arrivalDate}</p>
-          <p>Arrival Time: ${arrivalTime}</p>
-          <p>Available Seats: ${availableSeats}</p>
-          <p>Price (per adult): $${price.toFixed(2)}</p>
+          <p>Flight ID: ${flight.flight_id}</p>
+          <p>Departure Date: ${flight.departure_date}</p>
+          <p>Departure Time: ${flight.departure_time}</p>
+          <p>Arrival Date: ${flight.arrival_date}</p>
+          <p>Arrival Time: ${flight.arrival_time}</p>
+          <p>Available Seats: ${flight.available_seats}</p>
+          <p>Price (per adult): ${flight.price}</p>
           <button class="select-flight" 
-                  data-flight-id="${flightId}"
+                  data-flight-id="${flight.flight_id}"
                   data-flight-type="${flightType}">
             ${isSelected ? "Remove from cart" : "Add to cart"}
           </button>
           <hr>
         `;
       });
-  
+
       displayInfo.innerHTML += flightInfoHtml;
-  
+
       // Add event listeners for flight selection
       document.querySelectorAll(".select-flight").forEach((button) => {
         button.addEventListener("click", function () {
           const flightId = this.getAttribute("data-flight-id");
           const flightType = this.getAttribute("data-flight-type");
           const selectedFlights = JSON.parse(localStorage.getItem("selectedFlights")) || {};
-  
+          
           if (!selectedFlights[flightType]) {
             selectedFlights[flightType] = [];
           }
-  
+
           const isSelected = selectedFlights[flightType].some(f => f.flightId === flightId);
-  
+          
           if (isSelected) {
             // Remove flight from selection
             selectedFlights[flightType] = selectedFlights[flightType].filter(f => f.flightId !== flightId);
             this.innerText = "Add to cart";
           } else {
-            // Replace any existing flight of the same type (only one flight per direction)
+            // Remove any existing flight of the same type (only one flight per direction)
             selectedFlights[flightType] = [];
             // Add new flight to selection
             selectedFlights[flightType].push({
               flightId,
               adults: parseInt(document.getElementById("adults").value) || 0,
               children: parseInt(document.getElementById("children").value) || 0,
-              infants: parseInt(document.getElementById("infants").value) || 0,
+              infants: parseInt(document.getElementById("infants").value) || 0
             });
-  
+            
             this.innerText = "Remove from cart";
-  
+            
             // Update other buttons of the same flight type
             document.querySelectorAll(`.select-flight[data-flight-type="${flightType}"]`).forEach(btn => {
               if (btn !== this) {
@@ -279,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
               }
             });
           }
-  
+
           localStorage.setItem("selectedFlights", JSON.stringify(selectedFlights));
         });
       });
@@ -287,5 +262,4 @@ document.addEventListener("DOMContentLoaded", function () {
       displayInfo.innerHTML += `<p>No ${sectionTitle.toLowerCase()} available for the selected criteria.</p>`;
     }
   }
-  
 });
