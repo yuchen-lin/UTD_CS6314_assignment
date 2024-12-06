@@ -390,6 +390,7 @@ app.listen(port, () => {
 });
 
 // Route to update available rooms in hotels.json
+// This is not needed in hw4 anymore
 app.post("/update-hotel-rooms", (req, res) => {
   const { hotel_id, rooms_booked } = req.body;
   const filePath = path.join(__dirname, "data", "hotels.json");
@@ -860,143 +861,6 @@ app.post("/upload-hotels", express.json(), (req, res) => {
 });
 // End of hotel table upload
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Route to fetch hotels based on filters
 app.get("/hotels", (req, res) => {
   const { city, checkin, checkout, rooms } = req.query;
@@ -1006,8 +870,8 @@ app.get("/hotels", (req, res) => {
   // Query to find available hotels
   const query = `
     SELECT * FROM hotel
-    WHERE LOWER(city) = LOWER(?)`
-  ;
+    WHERE LOWER(city) = LOWER(?)
+  `;
 
   db.all(query, [city], (err, rows) => {
     if (err) {
@@ -1015,7 +879,10 @@ app.get("/hotels", (req, res) => {
       res.status(500).json({ error: "Internal server error" });
       return;
     }
-    
+
+    // Assuming check-in and check-out date range validation is handled in the client,
+    // you can apply additional server-side validation here if necessary.
+
     res.json(rows); // Return matching hotels
   });
 

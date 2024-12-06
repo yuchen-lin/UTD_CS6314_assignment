@@ -294,7 +294,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const firstName = document.getElementById(
           `first-name-${index}-${i}`
         ).value;
-        const lastName = document.getElementById(`last-name-${index}-${i}`).value;
+        const lastName = document.getElementById(
+          `last-name-${index}-${i}`
+        ).value;
         const dob = document.getElementById(`dob-${index}-${i}`).value;
         const ssn = document.getElementById(`ssn-${index}-${i}`).value;
 
@@ -326,7 +328,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Error saving booking:", error);
       });
   });
-
 });
 
 //----------------Hotel Bookings---------------
@@ -338,81 +339,63 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Display selected hotel details if cart data exists
   if (cartData) {
-      selectedHotelDiv.classList.remove("hidden");
-      hotelDetailsList.innerHTML = `
+    selectedHotelDiv.classList.remove("hidden");
+    hotelDetailsList.innerHTML = `
           <li><strong>Hotel ID:</strong> ${cartData.hotel_id}</li>
           <li><strong>Hotel Name:</strong> ${cartData.hotel_name}</li>
           <li><strong>City:</strong> ${cartData.city}</li>
-          <li><strong>Check-in Date:</strong> ${new Date(cartData.checkin_date).toDateString()}</li>
-          <li><strong>Check-out Date:</strong> ${new Date(cartData.checkout_date).toDateString()}</li>
+          <li><strong>Check-in Date:</strong> ${new Date(
+            cartData.checkin_date
+          ).toDateString()}</li>
+          <li><strong>Check-out Date:</strong> ${new Date(
+            cartData.checkout_date
+          ).toDateString()}</li>
           <li><strong>Adults:</strong> ${cartData.guests.adults}</li>
           <li><strong>Children:</strong> ${cartData.guests.children}</li>
           <li><strong>Infants:</strong> ${cartData.guests.infants}</li>
           <li><strong>Number of Rooms:</strong> ${cartData.rooms}</li>
-          <li><strong>Price per Night:</strong> $${cartData.price_per_night}</li>
-          <li><strong>Total Price:</strong> $${cartData.total_price.toFixed(2)}</li>
+          <li><strong>Price per Night:</strong> $${
+            cartData.price_per_night
+          }</li>
+          <li><strong>Total Price:</strong> $${cartData.total_price.toFixed(
+            2
+          )}</li>
       `;
   } else {
-      selectedHotelDiv.innerHTML = "<p>No hotel selected in the cart.</p>";
+    selectedHotelDiv.innerHTML = "<p>No hotel selected in the cart.</p>";
   }
 
   // Book hotel
-  document.getElementById("book-hotel-btn").addEventListener("click", async function () {
-    if (!cartData) {
+  document
+    .getElementById("book-hotel-btn")
+    .addEventListener("click", async function () {
+      if (!cartData) {
         alert("No hotel selected to book.");
         return;
-    }
+      }
 
-    try {
-        // Send booking details to save in XML
-        const bookingResponse = await fetch("http://localhost:3000/save-hotel-booking", {
+      try {
+        // Send booking details to save in the database
+        const bookingResponse = await fetch(
+          "http://localhost:3000/save-hotel-booking",
+          {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(cartData)
-        });
-
-        if (bookingResponse.ok) {
-            alert("Hotel booking confirmed!");
-            
-            // Update available rooms in hotels.json
-            try {
-                const updateResponse = await fetch("http://localhost:3000/update-hotel-rooms", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ hotel_id: cartData.hotel_id, rooms_booked: cartData.rooms })
-                });
-
-                // Log status and response body for debugging
-                console.log("Update Response Status:", updateResponse.status);
-                const updateResponseBody = await updateResponse.json();
-                console.log("Update Response Body:", updateResponseBody);
-
-                if (!updateResponse.ok) {
-                    console.error("Failed to update hotel rooms.");
-                }
-            } catch (updateError) {
-                console.error("Error updating hotel rooms:", updateError);
-            }
-
-            // Clear cart data after successful booking
-            localStorage.removeItem("cartItem");
-        } else {
-            alert("Booking failed. Please try again.");
-        }
-    } catch (error) {
+            body: JSON.stringify(cartData),
+          }
+        );
+      } catch (error) {
         console.error("Error while booking the hotel:", error);
         alert("An error occurred while confirming the booking.");
-    }
-  });
-
+      }
+    });
 
   // Clear cart
-  document.getElementById("clearHotelCart").addEventListener("click", function () {
+  document
+    .getElementById("clearHotelCart")
+    .addEventListener("click", function () {
       localStorage.removeItem("cartItem");
       selectedHotelDiv.innerHTML = "<p>Hotel cart cleared.</p>";
       selectedHotelDiv.classList.add("hidden");
-  });
-
-  
+    });
 });
-
