@@ -375,6 +375,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Clear cart data after successful booking
             localStorage.removeItem("cartItem");
+
+            // Display the booking details
+            const bookingDetailsDiv = document.createElement("div");
+            bookingDetailsDiv.id = "hotel-booking-details";
+            bookingDetailsDiv.innerHTML = `
+                <h3>Hotel Booking Details:</h3>
+                <ul>
+                    <li><strong>Hotel ID:</strong> ${cartData.hotel_id}</li>
+                    <li><strong>Hotel Name:</strong> ${cartData.hotel_name}</li>
+                    <li><strong>City:</strong> ${cartData.city}</li>
+                    <li><strong>Check-in Date:</strong> ${new Date(cartData.checkin_date).toDateString()}</li>
+                    <li><strong>Check-out Date:</strong> ${new Date(cartData.checkout_date).toDateString()}</li>
+                    <li><strong>Adults:</strong> ${cartData.guests.adults}</li>
+                    <li><strong>Children:</strong> ${cartData.guests.children}</li>
+                    <li><strong>Infants:</strong> ${cartData.guests.infants}</li>
+                    <li><strong>Number of Rooms:</strong> ${cartData.rooms}</li>
+                    <li><strong>Price per Night:</strong> $${cartData.price_per_night}</li>
+                    <li><strong>Total Price:</strong> $${cartData.total_price.toFixed(2)}</li>
+                </ul>
+            `;
+            document.querySelector(".right-section").appendChild(bookingDetailsDiv);
         } else {
             alert("Booking failed. Please try again.");
         }
