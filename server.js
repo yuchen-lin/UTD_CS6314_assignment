@@ -212,6 +212,7 @@ app.get("/get-flight-details", (req, res) => {
 
 app.use(express.json());
 
+// Function to ensure a passenger exists or inserts them into the database
 function ensurePassenger(db, passenger) {
   return new Promise((resolve, reject) => {
     const { ssn, firstName, lastName, dob, category } = passenger;
@@ -221,7 +222,7 @@ function ensurePassenger(db, passenger) {
         // Passenger already exists
         return resolve();
       } else {
-        // Insert passenger
+        // Insert new passenger
         db.run(
           "INSERT INTO passenger (ssn, first_name, last_name, dob, category) VALUES (?, ?, ?, ?, ?)",
           [ssn, firstName, lastName, dob, category],
@@ -235,6 +236,7 @@ function ensurePassenger(db, passenger) {
   });
 }
 
+// Function to compute prices based on passenger categories
 function computeCategoryPrices(basePrice, adultsCount, childrenCount, infantsCount) {
   return {
     adultPrice: basePrice,
@@ -247,6 +249,7 @@ function computeCategoryPrices(basePrice, adultsCount, childrenCount, infantsCou
   };
 }
 
+// Function to assign categories to passengers
 function assignPassengerCategories(passengers, adultsCount, childrenCount, infantsCount) {
   const assigned = [];
   let adultAssigned = 0;
@@ -272,10 +275,42 @@ function assignPassengerCategories(passengers, adultsCount, childrenCount, infan
   return assigned;
 }
 
+// Route to get flight details based on flightId
+app.get("/get-flight-details", (req, res) => {
+  const { flightId } = req.query;
+
+  if (!flightId) {
+    return res.status(400).json({ message: "flightId is required." });
+  }
+
+  const db = new sqlite3.Database("./data/app.db", sqlite3.OPEN_READONLY, (err) => {
+    if (err) {
+      console.error("Error opening database:", err.message);
+      return res.status(500).json({ message: "Internal server error." });
+    }
+  });
+
+  db.get("SELECT * FROM flights WHERE flight_id = ?", [flightId], (err, row) => {
+    if (err) {
+      console.error("Error fetching flight details:", err.message);
+      return res.status(500).json({ message: "Internal server error." });
+    }
+
+    if (!row) {
+      return res.status(404).json({ message: "Flight not found." });
+    }
+
+    res.json(row);
+    db.close();
+  });
+});
+
+// Route to save flight booking
 app.post("/save-flight-booking", async (req, res) => {
   const bookingDetails = req.body;
   const { flights, passengers } = bookingDetails;
 
+  // Basic validation
   if (!flights || !Array.isArray(flights) || flights.length === 0) {
     return res.status(400).json({ message: "No flights provided in booking." });
   }
@@ -287,14 +322,18 @@ app.post("/save-flight-booking", async (req, res) => {
   const db = new sqlite3.Database("./data/app.db", sqlite3.OPEN_READWRITE, (err) => {
     if (err) {
       console.error("Error opening database:", err.message);
-      return res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({ message: "Internal server error." });
     }
   });
 
+  // Initialize an array to hold booking information
+  const bookingResponse = [];
+
   try {
     for (let flightData of flights) {
-      const { flightId, adults, children, infants } = flightData;
+      const { flightId, adults, children, infants, type } = flightData;
 
+      // Fetch flight details
       const flightRow = await new Promise((resolve, reject) => {
         db.get("SELECT * FROM flights WHERE flight_id = ?", [flightId], (err, row) => {
           if (err) return reject(err);
@@ -318,8 +357,8 @@ app.post("/save-flight-booking", async (req, res) => {
       );
 
       console.log("UPDATING SEATS IN FLIGHT (SERVER.JS)");
-      console.log(availableSeats);
-      console.log(totalPassengers);
+      console.log(`Available Seats: ${availableSeats}`);
+      console.log(`Total Passengers: ${totalPassengers}`);
 
       // Update available seats
       await new Promise((resolve, reject) => {
@@ -333,7 +372,7 @@ app.post("/save-flight-booking", async (req, res) => {
         );
       });
 
-      // Insert into flight_booking
+      // Insert into flight_booking and get the booking ID
       const flightBookingId = await new Promise((resolve, reject) => {
         db.run(
           "INSERT INTO flight_booking (flight_id, total_price) VALUES (?, ?)",
@@ -348,6 +387,9 @@ app.post("/save-flight-booking", async (req, res) => {
       // Categorize passengers
       const categorizedPassengers = assignPassengerCategories(passengers, adults, children, infants);
 
+      // Initialize an array to hold passenger ticket information
+      const passengersInfo = [];
+
       // Ensure each passenger exists and insert tickets
       for (let p of categorizedPassengers) {
         await ensurePassenger(db, p);
@@ -361,17 +403,37 @@ app.post("/save-flight-booking", async (req, res) => {
           ticketPrice = infantPrice;
         }
 
-        await new Promise((resolve, reject) => {
+        // Insert ticket and get ticket ID
+        const ticketId = await new Promise((resolve, reject) => {
           db.run(
             "INSERT INTO tickets (flight_booking_id, ssn, price) VALUES (?, ?, ?)",
             [flightBookingId, p.ssn, ticketPrice],
             function (err) {
               if (err) return reject(err);
-              resolve();
+              resolve(this.lastID); // ticket_id
             }
           );
         });
+
+        // Add passenger's ticket information to the array, including price
+        passengersInfo.push({
+          ssn: p.ssn,
+          firstName: p.firstName,
+          lastName: p.lastName,
+          category: p.category,
+          ticketId: ticketId,
+          flightBookingId: flightBookingId,
+          price: ticketPrice // Added price
+        });
       }
+
+      // Add this flight's booking information to the response array
+      bookingResponse.push({
+        flightId: flightId,
+        flightBookingId: flightBookingId,
+        totalPrice: totalFlightPrice,
+        passengers: passengersInfo
+      });
     }
 
     db.close((closeErr) => {
@@ -379,7 +441,10 @@ app.post("/save-flight-booking", async (req, res) => {
         console.error("Error closing database:", closeErr.message);
         return res.status(500).json({ message: "Error finalizing booking." });
       }
-      return res.status(200).json({ message: "Booking saved successfully." });
+      return res.status(200).json({
+        message: "Booking saved successfully.",
+        bookings: bookingResponse
+      });
     });
 
   } catch (error) {
@@ -388,7 +453,7 @@ app.post("/save-flight-booking", async (req, res) => {
       if (closeErr) {
         console.error("Error closing database after error:", closeErr.message);
       }
-      res.status(500).json({ message: "An unexpected error occurred." });
+      res.status(500).json({ message: "An unexpected error occurred.", error: error.message });
     });
   }
 });
